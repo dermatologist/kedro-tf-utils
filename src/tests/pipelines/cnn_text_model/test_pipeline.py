@@ -1,5 +1,5 @@
 """
-This is a boilerplate test file for pipeline 'model'
+This is a boilerplate test file for pipeline 'cnn_text_model'
 generated using Kedro 0.18.1.
 Please add your pipeline tests here.
 

@@ -1,4 +1,4 @@
-# Pipeline model
+# Pipeline cnn_text_model
 
 > *Note:* This is a `README.md` boilerplate generated using `Kedro 0.18.1`.
 

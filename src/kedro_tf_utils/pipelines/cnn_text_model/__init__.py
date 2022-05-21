@@ -1,5 +1,5 @@
 """
-This is a boilerplate pipeline 'model'
+This is a boilerplate pipeline 'cnn_text_model'
 generated using Kedro 0.18.1
 """
 

@@ -1,4 +1,4 @@
-# This is a boilerplate parameters config generated for pipeline 'model'
+# This is a boilerplate parameters config generated for pipeline 'cnn_text_model'
 # using Kedro 0.18.1.
 #
 # Documentation for this file format can be found in "Parameters"
