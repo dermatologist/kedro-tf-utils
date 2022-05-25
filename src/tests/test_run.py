@@ -42,12 +42,12 @@ class TestProjectContext:
     def test_project_path(self, project_context):
         assert project_context.project_path == Path.cwd()
 
-    def test_tabular_model(self, project_context):
-        modelpath = "data/06_models/tabular_model"
-        load_args = dict()
-        load_args["custom_objects"] = dt_custom_objects
-        tf_model = TensorFlowModelDataset(filepath=modelpath, load_args=load_args)
-        reloaded = tf_model.load()
-        conf_params = project_context.config_loader.get('**/cnn_text_model.yml')
-        tabular_last_layer = last_layer_normalized(reloaded)
-        assert tabular_last_layer is not None
+    # def test_tabular_model(self, project_context):
+    #     modelpath = "data/06_models/tabular_model"
+    #     load_args = dict()
+    #     load_args["custom_objects"] = dt_custom_objects
+    #     tf_model = TensorFlowModelDataset(filepath=modelpath, load_args=load_args)
+    #     reloaded = tf_model.load()
+    #     conf_params = project_context.config_loader.get('**/cnn_text_model.yml')
+    #     tabular_last_layer = last_layer_normalized(reloaded)
+    #     assert tabular_last_layer is not None
