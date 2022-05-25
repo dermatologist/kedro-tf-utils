@@ -9,6 +9,8 @@ from keras.layers import concatenate
 from keras import regularizers
 from keras.models import Model
 from keras.optimizers import Adadelta, Adam, SGD
+from keras.applications.densenet import DenseNet121
+
 import numpy as np
 ##### https://github.com/faikaydin/medical-multimodal-with-transfer-learning/blob/master/cnn_model.py
 def create_channel(x, filter_size, feature_map):
@@ -115,6 +117,7 @@ def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):
     return multi_model
 
 
-def tabular_last_layer_normalized(model):
+def last_layer_normalized(model):
     last_layer = model.layers[-2].output
     return BatchNormalization()(last_layer)
+

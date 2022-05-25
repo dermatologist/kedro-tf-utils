@@ -18,7 +18,7 @@ from kedro.framework.context import KedroContext
 from kedro.framework.hooks import _create_hook_manager
 from deeptables.models.layers import dt_custom_objects
 from kedro.extras.datasets.tensorflow import TensorFlowModelDataset
-from kedro_tf_utils.pipelines.cnn_text_model.nodes import tabular_last_layer_normalized
+from kedro_tf_utils.pipelines.cnn_text_model.nodes import last_layer_normalized
 
 @pytest.fixture
 def config_loader():
@@ -49,5 +49,5 @@ class TestProjectContext:
         tf_model = TensorFlowModelDataset(filepath=modelpath, load_args=load_args)
         reloaded = tf_model.load()
         conf_params = project_context.config_loader.get('**/cnn_text_model.yml')
-        tabular_last_layer = tabular_last_layer_normalized(reloaded)
+        tabular_last_layer = last_layer_normalized(reloaded)
         assert tabular_last_layer is not None
