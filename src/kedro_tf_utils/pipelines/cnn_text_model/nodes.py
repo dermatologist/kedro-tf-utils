@@ -91,17 +91,17 @@ def train_cnn_model(emb_layer, X_train_text, y_train, X_test_text, y_test, param
 
     return model, history
 
-def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
-    fusion = concatenate([text_last_layer, img_last_layer])
-    x = BatchNormalization()(fusion)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(.3)(x)
-    x = BatchNormalization()(x)
-    out = Dense(1, activation='softmax')(x)
-    x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
-    image_input = Input(shape=(224, 224, 3))
-    multi_model = Model([x_in, image_input], out)
-    return multi_model
+# def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
+#     fusion = concatenate([text_last_layer, img_last_layer])
+#     x = BatchNormalization()(fusion)
+#     x = Dense(512, activation='relu')(x)
+#     x = Dropout(.3)(x)
+#     x = BatchNormalization()(x)
+#     out = Dense(1, activation='softmax')(x)
+#     x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
+#     image_input = Input(shape=(224, 224, 3))
+#     multi_model = Model([x_in, image_input], out)
+#     return multi_model
 
 
 # def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):

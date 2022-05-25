@@ -255,7 +255,7 @@ jupyterlab-widgets==1.1.0
     # via ipywidgets
 kedro==0.18.1
     # via -r /Users/M267492/Repository/kedro-tf-utils/src/requirements.txt
-keras==2.9.0
+keras==2.8.0
     # via tensorflow
 keras-preprocessing==1.1.2
     # via tensorflow
@@ -365,7 +365,6 @@ packaging==21.3
     #   pytest
     #   qtpy
     #   statsmodels
-    #   tensorflow
 pandas==1.4.1
     # via
     #   -r /Users/M267492/Repository/kedro-tf-utils/src/requirements.txt
@@ -576,16 +575,14 @@ tabulate==0.8.9
     # via eli5
 tblib==1.7.0
     # via distributed
-tensorboard==2.9.0
+tensorboard==2.8.0
     # via tensorflow
 tensorboard-data-server==0.6.1
     # via tensorboard
 tensorboard-plugin-wit==1.8.1
     # via tensorboard
-tensorflow==2.9.0
+tensorflow==2.8.0
     # via -r /Users/M267492/Repository/kedro-tf-utils/src/requirements.txt
-tensorflow-estimator==2.9.0
-    # via tensorflow
 tensorflow-io-gcs-filesystem==0.26.0
     # via tensorflow
 termcolor==1.1.0
@@ -596,6 +593,8 @@ terminado==0.15.0
     #   notebook
 text-unidecode==1.3
     # via python-slugify
+tf-estimator-nightly==2.8.0.dev2021122109
+    # via tensorflow
 threadpoolctl==3.1.0
     # via scikit-learn
 tinycss2==1.1.1
