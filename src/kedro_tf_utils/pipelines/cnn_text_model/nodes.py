@@ -8,7 +8,7 @@ from keras.layers.convolutional import Conv1D, MaxPooling1D
 from keras.layers import concatenate
 from keras import regularizers
 from keras.models import Model
-from keras.optimizers import Adadelta, Adam, SGD
+from tensorflow.keras.optimizers import Adadelta, Adam, SGD
 from keras.applications.densenet import DenseNet121
 
 import numpy as np
@@ -65,43 +65,43 @@ def create_cnn_model(embedding_layer=None, num_words=None,
 
 ##############
 
-def train_cnn_model(emb_layer, X_train_text, y_train, X_test_text, y_test, parameters):
-    model = create_cnn_model(
-        embedding_layer=emb_layer,
-        num_words=parameters['MAX_NUM_WORDS'],
-        embedding_dim=parameters['EMBEDDING_DIM'],
-        filter_sizes=parameters['FILTER_SIZES'],
-        feature_maps=parameters['FEATURE_MAPS'],
-        max_seq_length=parameters['MAX_SEQ_LENGTH'],
-        dropout_rate=parameters['DROPOUT_RATE']
-    )
+# def train_cnn_model(emb_layer, X_train_text, y_train, X_test_text, y_test, parameters):
+#     model = create_cnn_model(
+#         embedding_layer=emb_layer,
+#         num_words=parameters['MAX_NUM_WORDS'],
+#         embedding_dim=parameters['EMBEDDING_DIM'],
+#         filter_sizes=parameters['FILTER_SIZES'],
+#         feature_maps=parameters['FEATURE_MAPS'],
+#         max_seq_length=parameters['MAX_SEQ_LENGTH'],
+#         dropout_rate=parameters['DROPOUT_RATE']
+#     )
 
-    model.compile(
-        loss='binary_crossentropy',
-        optimizer=Adadelta(clipvalue=3),
-        metrics=['accuracy']
-    )
+#     model.compile(
+#         loss='binary_crossentropy',
+#         optimizer=Adadelta(clipvalue=3),
+#         metrics=['accuracy']
+#     )
 
-    history = model.fit(
-                    np.array(X_train_text), y_train,
-                    epochs=parameters['EPOCHS'],
-                    validation_data=(np.array(X_test_text), y_test),
-                    verbose=0
-                    )
+#     history = model.fit(
+#                     np.array(X_train_text), y_train,
+#                     epochs=parameters['EPOCHS'],
+#                     validation_data=(np.array(X_test_text), y_test),
+#                     verbose=0
+#                     )
 
-    return model, history
+#     return model, history
 
-def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
-    fusion = concatenate([text_last_layer, img_last_layer])
-    x = BatchNormalization()(fusion)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(.3)(x)
-    x = BatchNormalization()(x)
-    out = Dense(1, activation='softmax')(x)
-    x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
-    image_input = Input(shape=(224, 224, 3))
-    multi_model = Model([x_in, image_input], out)
-    return multi_model
+# def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
+#     fusion = concatenate([text_last_layer, img_last_layer])
+#     x = BatchNormalization()(fusion)
+#     x = Dense(512, activation='relu')(x)
+#     x = Dropout(.3)(x)
+#     x = BatchNormalization()(x)
+#     out = Dense(1, activation='softmax')(x)
+#     x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
+#     image_input = Input(shape=(224, 224, 3))
+#     multi_model = Model([x_in, image_input], out)
+#     return multi_model
 
 
 # def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):

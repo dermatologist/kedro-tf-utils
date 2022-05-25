@@ -2,3 +2,26 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
+
+tabular_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/test_dataset.csv
+
+image_data:
+  type: PartitionedDataSet
+  dataset: pillow.ImageDataSet
+  path: data/01_raw/imageset
+  filename_suffix: ".jpg"
+
+chexnet_model:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/06_models/densenet-chexnet
+
+
+fusion_model:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/07_model_output/fusion
+
+datasetinmemory:
+  type: MemoryDataSet
+  copy_mode: assign

@@ -19,6 +19,7 @@ from kedro.framework.hooks import _create_hook_manager
 from deeptables.models.layers import dt_custom_objects
 from kedro.extras.datasets.tensorflow import TensorFlowModelDataset
 from kedro_tf_utils.pipelines.cnn_text_model.nodes import last_layer_normalized
+from kedro.io import PartitionedDataSet
 
 @pytest.fixture
 def config_loader():
@@ -51,3 +52,12 @@ class TestProjectContext:
     #     conf_params = project_context.config_loader.get('**/cnn_text_model.yml')
     #     tabular_last_layer = last_layer_normalized(reloaded)
     #     assert tabular_last_layer is not None
+
+    def test_image_load(self, project_context):
+        dataset = "kedro.extras.datasets.pillow.ImageDataSet"
+        path = 'data/01_raw/imageset'
+        filename_suffix = ".jpg"
+        partitioned_dataset = PartitionedDataSet(dataset=dataset, path=path, filename_suffix=filename_suffix)
+        reloaded = partitioned_dataset.load()
+        print(reloaded.keys())
+        assert reloaded is not None
