@@ -113,3 +113,8 @@ def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):
     tabular_input = Input(shape=(parameters['DIM_OF_LAST_LAYER_FROM_TABULAR'],), dtype='int32')
     multi_model = Model([x_in, tabular_input], out)
     return multi_model
+
+
+def tabular_last_layer_normalized(model):
+    last_layer = model.layers[-2].output
+    return BatchNormalization()(last_layer)
