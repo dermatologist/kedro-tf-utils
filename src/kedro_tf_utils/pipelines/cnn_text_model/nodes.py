@@ -65,31 +65,31 @@ def create_cnn_model(embedding_layer=None, num_words=None,
 
 ##############
 
-def train_cnn_model(emb_layer, X_train_text, y_train, X_test_text, y_test, parameters):
-    model = create_cnn_model(
-        embedding_layer=emb_layer,
-        num_words=parameters['MAX_NUM_WORDS'],
-        embedding_dim=parameters['EMBEDDING_DIM'],
-        filter_sizes=parameters['FILTER_SIZES'],
-        feature_maps=parameters['FEATURE_MAPS'],
-        max_seq_length=parameters['MAX_SEQ_LENGTH'],
-        dropout_rate=parameters['DROPOUT_RATE']
-    )
+# def train_cnn_model(emb_layer, X_train_text, y_train, X_test_text, y_test, parameters):
+#     model = create_cnn_model(
+#         embedding_layer=emb_layer,
+#         num_words=parameters['MAX_NUM_WORDS'],
+#         embedding_dim=parameters['EMBEDDING_DIM'],
+#         filter_sizes=parameters['FILTER_SIZES'],
+#         feature_maps=parameters['FEATURE_MAPS'],
+#         max_seq_length=parameters['MAX_SEQ_LENGTH'],
+#         dropout_rate=parameters['DROPOUT_RATE']
+#     )
 
-    model.compile(
-        loss='binary_crossentropy',
-        optimizer=Adadelta(clipvalue=3),
-        metrics=['accuracy']
-    )
+#     model.compile(
+#         loss='binary_crossentropy',
+#         optimizer=Adadelta(clipvalue=3),
+#         metrics=['accuracy']
+#     )
 
-    history = model.fit(
-                    np.array(X_train_text), y_train,
-                    epochs=parameters['EPOCHS'],
-                    validation_data=(np.array(X_test_text), y_test),
-                    verbose=0
-                    )
+#     history = model.fit(
+#                     np.array(X_train_text), y_train,
+#                     epochs=parameters['EPOCHS'],
+#                     validation_data=(np.array(X_test_text), y_test),
+#                     verbose=0
+#                     )
 
-    return model, history
+#     return model, history
 
 # def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
 #     fusion = concatenate([text_last_layer, img_last_layer])
