@@ -104,20 +104,32 @@ def text_image_model_fusion(text_last_layer, img_last_layer, parameters):
     return multi_model
 
 
-def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):
-    fusion = concatenate([text_last_layer, tabular_last_layer])
-    x = BatchNormalization()(fusion)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(.3)(x)
-    x = BatchNormalization()(x)
-    out = Dense(1, activation='softmax')(x)
-    x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
-    tabular_input = Input(shape=(parameters['DIM_OF_LAST_LAYER_FROM_TABULAR'],), dtype='int32')
-    multi_model = Model([x_in, tabular_input], out)
-    return multi_model
+# def text_tabular_model_fusion(text_last_layer, tabular_last_layer, parameters):
+#     fusion = concatenate([text_last_layer, tabular_last_layer])
+#     x = BatchNormalization()(fusion)
+#     x = Dense(512, activation='relu')(x)
+#     x = Dropout(.3)(x)
+#     x = BatchNormalization()(x)
+#     out = Dense(1, activation='softmax')(x)
+#     x_in = Input(shape=(parameters['MAX_SEQ_LENGTH'],), dtype='int32')
+#     tabular_input = Input(shape=(parameters['DIM_OF_LAST_LAYER_FROM_TABULAR'],), dtype='int32')
+#     multi_model = Model([x_in, tabular_input], out)
+#     return multi_model
 
 
 def last_layer_normalized(model):
     last_layer = model.layers[-2].output
     return BatchNormalization()(last_layer)
 
+
+def early_fusion_mm(text_model, image_model, parameters):
+    text_last_layer = last_layer_normalized(text_model)
+    image_last_layer = last_layer_normalized(image_model)
+    fusion = concatenate([text_last_layer, image_last_layer])
+    x = BatchNormalization()(fusion)
+    x = Dense(512, activation='relu')(x)
+    x = Dropout(.3)(x)
+    x = BatchNormalization()(x)
+    out = Dense(1, activation='softmax')(x)
+    multi_model = Model([text_model.inputs, image_model.inputs], out)
+    return multi_model
