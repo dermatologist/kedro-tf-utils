@@ -8,7 +8,7 @@ from keras.layers.convolutional import Conv1D, MaxPooling1D
 from keras.layers import concatenate
 from keras import regularizers
 from keras.models import Model
-from keras.optimizers import Adadelta, Adam, SGD
+from tensorflow.keras.optimizers import Adadelta, Adam, SGD
 from keras.applications.densenet import DenseNet121
 
 import numpy as np

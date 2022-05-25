@@ -21,3 +21,7 @@ chexnet_model:
 fusion_model:
   type: tensorflow.TensorFlowModelDataset
   filepath: data/07_model_output/fusion
+
+datasetinmemory:
+  type: MemoryDataSet
+  copy_mode: assign

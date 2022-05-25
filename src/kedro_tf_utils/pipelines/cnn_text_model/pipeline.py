@@ -17,13 +17,13 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
 
                     node(
                         tabular_model,
-                        ["tabular_data", "parameters.embedding"],
-                        "text_model",
+                        ["tabular_data", "parameters"],
+                        "datasetinmemory",
                         name="create_text_model"
                     ),
                     node(
                         early_fusion_mm,
-                        ["text_model", "chexnet_model", "parameters.embedding"],
+                        ["datasetinmemory", "chexnet_model", "parameters"],
                         "fusion_model",
                         name="create_fusion_model"
                     ),
