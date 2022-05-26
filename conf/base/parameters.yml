@@ -1,1 +1,2 @@
-TARGET: gender
+TARGET: dm
+DROP: name
