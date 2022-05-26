@@ -53,11 +53,11 @@ class TestProjectContext:
     #     tabular_last_layer = last_layer_normalized(reloaded)
     #     assert tabular_last_layer is not None
 
-    def test_image_load(self, project_context):
-        dataset = "kedro.extras.datasets.pillow.ImageDataSet"
-        path = 'data/01_raw/imageset'
-        filename_suffix = ".jpg"
-        partitioned_dataset = PartitionedDataSet(dataset=dataset, path=path, filename_suffix=filename_suffix)
-        reloaded = partitioned_dataset.load()
-        print(reloaded.keys())
-        assert reloaded is not None
+    # def test_image_load(self, project_context):
+    #     dataset = "kedro.extras.datasets.pillow.ImageDataSet"
+    #     path = 'data/01_raw/imageset'
+    #     filename_suffix = ".jpg"
+    #     partitioned_dataset = PartitionedDataSet(dataset=dataset, path=path, filename_suffix=filename_suffix)
+    #     reloaded = partitioned_dataset.load()
+    #     print(reloaded.keys())
+    #     assert reloaded is not None
