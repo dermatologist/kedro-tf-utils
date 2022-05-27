@@ -25,5 +25,5 @@ def early_fusion_mm(text_model, image_model, parameters):
     x = Dropout(.3)(x)
     x = BatchNormalization()(x)
     out = Dense(1, activation='softmax')(x)
-    multi_model = Model([text_model.inputs, image_model.inputs], out)
+    multi_model = Model([text_model.input, image_model.input], out)
     return multi_model
