@@ -18,7 +18,8 @@ from kedro.framework.context import KedroContext
 from kedro.framework.hooks import _create_hook_manager
 from deeptables.models.layers import dt_custom_objects
 from kedro.extras.datasets.tensorflow import TensorFlowModelDataset
-from kedro_tf_utils.pipelines.cnn_text_model.nodes import last_layer_normalized
+from kedro_tf_utils.pipelines.fusion.nodes import last_layer_normalized
+from kedro_tf_utils.pipelines.cnn_text_model.nodes import create_cnn_model
 from kedro.io import PartitionedDataSet
 
 @pytest.fixture
@@ -61,3 +62,8 @@ class TestProjectContext:
     #     reloaded = partitioned_dataset.load()
     #     print(reloaded.keys())
     #     assert reloaded is not None
+
+    def test_cnn_model(self, project_context):
+        model = create_cnn_model(embedding_layer=None, num_words=1500,
+                                 embedding_dim=300)
+        assert model is not None
