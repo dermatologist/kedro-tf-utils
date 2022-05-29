@@ -3,7 +3,7 @@ from typing import Dict
 
 from kedro.pipeline import Pipeline, pipeline
 
-from kedro_tf_utils.pipelines.fusion.pipeline import create_fusion_pipeline
+from kedro_tf_utils.pipelines.fusion.pipeline import create_fusion_pipeline, create_text_fusion_pipeline
 
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -12,4 +12,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
     Returns:
         A mapping from a pipeline name to a ``Pipeline`` object.
     """
-    return {"__default__": create_fusion_pipeline()}
+    return {
+        "__default__": create_fusion_pipeline(),
+        "report": create_text_fusion_pipeline(),
+        }
+

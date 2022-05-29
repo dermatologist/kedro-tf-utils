@@ -43,7 +43,7 @@ def create_cnn_model(embedding_layer=None, num_words=None,
                                     )
 
     channels = []
-    x_in = Input(shape=(max_seq_length,), dtype='int32')
+    x_in = Input(shape=(max_seq_length,), dtype='int32', name='cnn_text_input')
     emb_layer = embedding_layer(x_in)
     if dropout_rate:
         emb_layer = Dropout(dropout_rate)(emb_layer)
