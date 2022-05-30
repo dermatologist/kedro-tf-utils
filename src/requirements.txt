@@ -13,3 +13,5 @@ pytest~=6.2
 tensorflow==2.8.0
 pandas
 deeptables
+nltk
+kedro_tf_text @ git+https://github.com/dermatologist/kedro-tf-text.git@develop
