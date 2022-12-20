@@ -22,9 +22,9 @@ def create_train_pipeline(**kwargs) -> Pipeline:
 
                     node(
                         func=train_multimodal,
-                        inputs=["tabular_data", "image_data", "fusion_model"],
+                        inputs=["tabular_data", "image_data",
+                                "fusion_model", "params:train_model"],
                         outputs="trained_model",
-                        parameters="params:train_model",
                         name="train_model"
                     ),
                     ])
