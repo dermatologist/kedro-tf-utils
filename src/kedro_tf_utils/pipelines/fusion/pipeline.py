@@ -25,8 +25,8 @@ def create_tabular_pipeline(**kwargs) -> Pipeline:
                         name="create_text_model"
                     ),
                     node(
-                        early_fusion_mm,
-                        inputs=["datasetinmemory", "chexnet_model", "params:fusion"],
+                        early_fusion_mm, #! Parameters come first followed by the models. Note this when using this node in the pipeline
+                        inputs=["params:fusion", "datasetinmemory", "chexnet_model"], # any number of inputs
                         outputs="fusion_model",
                         name="create_fusion_model"
                     ),

@@ -2,6 +2,7 @@
 This is a boilerplate pipeline 'fusion'
 generated using Kedro 0.18.1
 """
+from typing import Dict, List
 import tensorflow as tf
 from keras.layers import Activation, Input, Dense, Flatten, Dropout, Embedding, BatchNormalization, AveragePooling2D
 from keras.layers.convolutional import Conv1D, MaxPooling1D
@@ -28,14 +29,27 @@ def add_dense_layers(model, parameters):
         layer.trainable = True
     return model
 
-def early_fusion_mm(text_model, image_model, parameters):
-    text_last_layer = last_layer_normalized(text_model)
-    image_last_layer = last_layer_normalized(image_model)
-    fusion = concatenate([text_last_layer, image_last_layer])
+
+# ! Parameters come first followed by the models. Note this when using this node in the pipeline
+def early_fusion_mm(parameters: Dict, *args):
+    """_summary_
+
+    Args:
+        parameters (Dict): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    models_headless = []
+    input_shapes = []
+    for model in args:
+        models_headless.append(last_layer_normalized(model))
+        input_shapes.append(model.input)
+    fusion = concatenate(models_headless)
     x = BatchNormalization()(fusion)
     x = Dense(512, activation='relu')(x)
     x = Dropout(.3)(x)
     x = BatchNormalization()(x)
     out = Dense(1, activation='softmax')(x)
-    multi_model = Model([text_model.input, image_model.input], out)
+    multi_model = Model(input_shapes, out)
     return multi_model
