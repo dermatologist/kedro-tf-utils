@@ -1,8 +1,9 @@
-TARGET: dm
-DROP: ["name", "id"]
-ID: id
-MAX_NUM_WORDS: 15000
-EMBEDDING_DIM: 300
-MAX_SEQ_LENGTH: 140
-REPORT_FIELD: report
-ID_FIELD: id
+glove_embedding:
+  MAX_NUM_WORDS: 15000
+  EMBEDDING_DIM: 300
+  MAX_SEQ_LENGTH: 140
+  REPORT_FIELD: report
+  ID_FIELD: id
+  ID: id
+  TARGET: dm # The header of the dependant variable
+  DROP: ["name", "id"]
