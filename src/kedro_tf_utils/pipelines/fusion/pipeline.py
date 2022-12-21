@@ -20,13 +20,13 @@ def create_tabular_pipeline(**kwargs) -> Pipeline:
 
                     node(
                         tabular_model,
-                        inputs=["tabular_data", "params:glove_embedding"],
+                        inputs=["tabular_data", "params:fusion"],
                         outputs="datasetinmemory",
                         name="create_text_model"
                     ),
                     node(
                         early_fusion_mm,
-                        inputs=["datasetinmemory", "chexnet_model", "params:glove_embedding"],
+                        inputs=["datasetinmemory", "chexnet_model", "params:fusion"],
                         outputs="fusion_model",
                         name="create_fusion_model"
                     ),
@@ -37,13 +37,13 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
     return pipeline([
         node(
             create_cnn_model,
-            inputs=["glove_embedding", "params:glove_embedding"],
+            inputs=["glove_embedding", "params:fusion"],
             outputs="datasetinmemory",
             name="create_cnn_model"
         ),
         node(
             early_fusion_mm,
-            inputs=["datasetinmemory", "chexnet_model", "params:glove_embedding"],
+            inputs=["datasetinmemory", "chexnet_model", "params:fusion"],
             outputs="fusion_model",
             name="create_fusion_model"
         ),
@@ -56,7 +56,7 @@ def create_text_fusion_pipeline(**kwargs) -> Pipeline:
     created_pickle = pickle_processed_text_pipeline()
     created_fusion = create_fusion_pipeline()
     glove_embedding_pipeline = modular_pipeline(pipe=created_glove, parameters={
-        "params:embedding": "params:glove_embedding"})
+        "params:embedding": "params:fusion"})
     processed_text_pipeline = modular_pipeline(pipe=created_pickle, parameters={
-                                               "params:embedding": "params:glove_embedding"})
+                                               "params:embedding": "params:fusion"})
     return processed_text_pipeline + glove_embedding_pipeline + created_fusion
