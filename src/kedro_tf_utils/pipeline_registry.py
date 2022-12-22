@@ -1,4 +1,10 @@
 """Project pipelines."""
+
+import tensorflow_text as text
+# TODO: https://github.com/tensorflow/hub/issues/705
+# ! Remove later
+
+
 from typing import Dict
 
 from kedro.pipeline import Pipeline, pipeline

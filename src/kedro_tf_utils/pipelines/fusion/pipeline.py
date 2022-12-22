@@ -10,6 +10,7 @@ from kedro_tf_text.pipelines.preprocess.nodes import tabular_model, pickle_proce
 
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
 from kedro_tf_text.pipelines.preprocess.pipeline import create_glove_embedding_pipeline, pickle_processed_text_pipeline
+from kedro_tf_text.pipelines.preprocess.nodes import get_tf_bert_model
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
@@ -17,7 +18,12 @@ def create_pipeline(**kwargs) -> Pipeline:
 
 def create_tabular_pipeline(**kwargs) -> Pipeline:
     return pipeline([
-
+                    node(
+                        get_tf_bert_model,
+                        inputs=["bert_model", "params:bert_model"],
+                        outputs="bert_model_saved",
+                        name="build_bert_model"
+                    ),
                     node(
                         tabular_model,
                         inputs=["tabular_data", "params:fusion"],
@@ -26,7 +32,8 @@ def create_tabular_pipeline(**kwargs) -> Pipeline:
                     ),
                     node(
                         early_fusion_mm, #! Parameters come first followed by the models. Note this when using this node in the pipeline
-                        inputs=["params:fusion", "datasetinmemory", "chexnet_model"], # any number of inputs
+                        inputs=["params:fusion", "datasetinmemory",
+                                "bert_model_saved", "chexnet_model"],  # any number of inputs
                         outputs="fusion_model",
                         name="create_fusion_model"
                     ),

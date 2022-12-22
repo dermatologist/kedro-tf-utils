@@ -46,3 +46,23 @@ glove_embedding:
 processed_text:
   type: pickle.PickleDataSet
   filepath: data/03_primary/processed-text.pkl
+
+
+
+bert_model:
+  type: kedro_tf_text.extras.datasets.bert_model_download.BertModelDownload
+  preprocessor_url: "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
+  encoder_url: "https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4"
+
+bert_model_saved:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/06_models/bert-tf
+  load_args:
+    compile: False
+  save_args:
+    overwrite: True
+    include_optimizer: False
+
+# bert_model_saved:
+#   type: pickle.PickleDataSet
+#   filepath: data/06_models/bert-tf.pkl
