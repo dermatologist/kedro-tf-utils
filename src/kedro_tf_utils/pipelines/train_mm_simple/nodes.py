@@ -42,3 +42,26 @@ def train_multimodal(text_dataset, image_dataset, multi_modal, parameters):
         y=y, batch_size=32, epochs=3, verbose=1,
         validation_data=None)
     return multi_modal
+
+
+def train_multimodal_bert(text_dataset, bert_dataset, multi_modal, parameters):
+    """
+    Train multimodal model
+    """
+
+    # sort by key that is the same as parameters['ID']
+    _text_dataset = text_dataset.sort_values(by=[parameters['ID']])
+
+    y = _text_dataset.pop(parameters['TARGET'])
+    _text_dataset.drop(parameters['DROP'], axis=1, inplace=True)
+
+    
+
+    multi_modal.compile(loss='binary_crossentropy',
+                        optimizer=Adam(), metrics=['accuracy'])
+
+    hist = multi_modal.fit(
+        x=[csv_features_dict, imgs],
+        y=y, batch_size=32, epochs=3, verbose=1,
+        validation_data=None)
+    return multi_modal

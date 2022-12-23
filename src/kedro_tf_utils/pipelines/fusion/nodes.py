@@ -7,14 +7,24 @@ import tensorflow as tf
 from keras.layers import Activation, Input, Dense, Flatten, Dropout, Embedding, BatchNormalization, AveragePooling2D
 from keras.layers.convolutional import Conv1D, MaxPooling1D
 from keras.layers import concatenate
-from keras import regularizers
+from keras import regularizers, models, layers
 from keras.models import Model
 from tensorflow.keras.optimizers import Adadelta, Adam, SGD
 from keras.applications.densenet import DenseNet121
+from keras.layers import LSTM
 
+# https://github.com/keras-team/keras/issues/7403
 def last_layer_normalized(model):
     last_layer = model.layers[-2].output
-    return BatchNormalization()(last_layer)
+    try:
+        return BatchNormalization()(last_layer)
+    except:
+        # https://stackoverflow.com/questions/58607787/bert-embedding-layer-raises-type-error-unsupported-operand-types-for-non
+        last_layer = LSTM(128, name="LSTM", dropout=0.2,
+                          recurrent_dropout=0.2, return_sequences=True)(model.output)
+        # output = Dense(128, activation="softmax")(last_layer)
+        model_lstm = models.Model(model.input, last_layer)
+        return model_lstm.output
 
 # https://github.com/artelab/Image-and-Text-fusion-for-UPMC-Food-101-using-BERT-and-CNNs/blob/main/stacking_early_fusion_UPMC_food101.ipynb
 # !Not currently used
@@ -45,7 +55,8 @@ def early_fusion_mm(parameters: Dict, *args):
     for model in args:
         models_headless.append(last_layer_normalized(model))
         input_shapes.append(model.input)
-    fusion = concatenate(models_headless)
+    # A `Concatenate` layer requires inputs with matching shapes except for the concatenation axis. Received: input_shape=[(None, 6), (None, 128, 128), (None, 1024)]
+    fusion = layers.Concatenate()(models_headless)
     x = BatchNormalization()(fusion)
     x = Dense(512, activation='relu')(x)
     x = Dropout(.3)(x)
