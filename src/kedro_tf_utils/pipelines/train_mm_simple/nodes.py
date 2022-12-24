@@ -55,13 +55,14 @@ def train_multimodal_bert(text_dataset, bert_dataset, multi_modal, parameters):
     y = _text_dataset.pop(parameters['TARGET'])
     _text_dataset.drop(parameters['DROP'], axis=1, inplace=True)
 
-    
+    reports = bert_dataset.pop(parameters['REPORT_FIELD'])
+
 
     multi_modal.compile(loss='binary_crossentropy',
                         optimizer=Adam(), metrics=['accuracy'])
 
     hist = multi_modal.fit(
-        x=[csv_features_dict, imgs],
+        x=[_text_dataset, reports],
         y=y, batch_size=32, epochs=3, verbose=1,
         validation_data=None)
     return multi_modal

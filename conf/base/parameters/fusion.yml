@@ -15,4 +15,7 @@ fusion:
 bert_model:
   MAX_LENGTH: 40
   NCLASSES: 3
-  REPORT_FIELD: Text
+  REPORT_FIELD: report
+  ID: id
+  TARGET: dm
+  DROP: ["name", "id"]
