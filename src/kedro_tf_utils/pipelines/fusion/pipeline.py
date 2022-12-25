@@ -12,8 +12,7 @@ from kedro_tf_text.pipelines.preprocess.pipeline import create_glove_embedding_p
 from kedro_tf_text.pipelines.bert.nodes import get_tf_bert_model
 from kedro_tf_text.pipelines.tabular.nodes import tabular_model
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
-
-
+from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
@@ -48,21 +47,33 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
         node(
             create_cnn_model,
             inputs=["glove_embedding", "params:fusion"],
-            outputs="datasetinmemory",
+            outputs="cnn_text_model",
             name="create_cnn_model"
         ),
         node(
             early_fusion_mm,
-            inputs=["params:fusion", "datasetinmemory", "chexnet_model"], # params first followed by the models
+            # params first followed by the models
+            inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
             outputs="fusion_model",
             name="create_fusion_model"
         ),
 
     ])
 
+early_fusion_mm_pipeline = pipeline([
+    node(
+        early_fusion_mm,
+        # params first followed by the models
+        inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
+        outputs="fusion_model",
+        name="create_fusion_model"
+    ),
+])
+
 # Demonstrates the use of modular pipelines: https://kedro.readthedocs.io/en/stable/nodes_and_pipelines/modular_pipelines.html
 def create_text_fusion_pipeline(**kwargs) -> Pipeline:
     text_fusion_pipeline = modular_pipeline(pipe=word2vec_embedding, parameters={
                                             "params:embedding": "params:fusion"})
-    created_fusion = create_fusion_pipeline()
-    return text_fusion_pipeline + created_fusion
+    _cnn_text_pipeline = modular_pipeline(pipe=cnn_text_pipeline, parameters={
+        "params:cnn_text_model": "params:fusion"})
+    return text_fusion_pipeline + _cnn_text_pipeline + early_fusion_mm_pipeline

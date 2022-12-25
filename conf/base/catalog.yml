@@ -47,6 +47,10 @@ glove_embedding:
   type: pickle.PickleDataSet
   filepath: data/06_models/glove-embedding.pkl
 
+cnn_text_model:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/cnn_text_model.pkl
+
 processed_text:
   type: pickle.PickleDataSet
   filepath: data/03_primary/processed-text.pkl
