@@ -39,6 +39,10 @@ vocab_json:
   type: json.JSONDataSet
   filepath: data/04_feature/vocab.json
 
+word2vec_embedding:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/word2vec-embedding.pkl
+
 glove_embedding:
   type: pickle.PickleDataSet
   filepath: data/06_models/glove-embedding.pkl

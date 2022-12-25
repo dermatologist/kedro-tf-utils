@@ -12,6 +12,7 @@ fusion:
   ID: id
   TARGET: dm # The header of the dependant variable
   DROP: ["name", "id"]
+  train_embedding: False
 bert_model:
   MAX_LENGTH: 40
   NCLASSES: 3
