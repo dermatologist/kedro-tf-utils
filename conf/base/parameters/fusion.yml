@@ -3,3 +3,19 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.1/kedro_project_setup/configuration.html#parameters
+fusion:
+  MAX_NUM_WORDS: 15000
+  EMBEDDING_DIM: 300
+  MAX_SEQ_LENGTH: 140
+  REPORT_FIELD: report
+  ID_FIELD: id
+  ID: id
+  TARGET: dm # The header of the dependant variable
+  DROP: ["name", "id"]
+bert_model:
+  MAX_LENGTH: 40
+  NCLASSES: 3
+  REPORT_FIELD: report
+  ID: id
+  TARGET: dm
+  DROP: ["name", "id"]
