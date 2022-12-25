@@ -47,8 +47,6 @@ processed_text:
   type: pickle.PickleDataSet
   filepath: data/03_primary/processed-text.pkl
 
-
-
 bert_model:
   type: kedro_tf_text.extras.datasets.bert_model_download.BertModelDownload
   preprocessor_url: "https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3"
@@ -63,6 +61,6 @@ bert_model_saved:
     overwrite: True
     include_optimizer: False
 
-# bert_model_saved:
-#   type: pickle.PickleDataSet
-#   filepath: data/06_models/bert-tf.pkl
+tabular_bert_trained:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/07_model_output/tabular-bert-trained

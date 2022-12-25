@@ -54,7 +54,8 @@ def train_multimodal_bert(text_dataset, bert_dataset, multi_modal, parameters):
 
     y = _text_dataset.pop(parameters['TARGET'])
     _text_dataset.drop(parameters['DROP'], axis=1, inplace=True)
-
+    csv_features_dict = {name: np.array(value)
+                         for name, value in _text_dataset.items()}
     reports = bert_dataset.pop(parameters['REPORT_FIELD'])
 
 
@@ -62,7 +63,7 @@ def train_multimodal_bert(text_dataset, bert_dataset, multi_modal, parameters):
                         optimizer=Adam(), metrics=['accuracy'])
 
     hist = multi_modal.fit(
-        x=[_text_dataset, reports],
+        x=[csv_features_dict, reports],
         y=y, batch_size=32, epochs=3, verbose=1,
         validation_data=None)
     return multi_modal

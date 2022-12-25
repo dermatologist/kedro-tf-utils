@@ -37,7 +37,7 @@ def create_bert_train_pipeline(**kwargs) -> Pipeline:
                         func=train_multimodal_bert,
                         inputs=["tabular_data", "text_data",
                                 "fusion_model", "params:bert_model"],
-                        outputs="trained_model",
-                        name="train_model"
+                        outputs="tabular_bert_trained",
+                        name="train_tabular_bert_model"
                     ),
                     ])
