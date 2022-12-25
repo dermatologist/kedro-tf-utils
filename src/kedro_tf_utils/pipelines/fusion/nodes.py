@@ -2,15 +2,10 @@
 This is a boilerplate pipeline 'fusion'
 generated using Kedro 0.18.1
 """
-from typing import Dict, List
-import tensorflow as tf
-from keras.layers import Activation, Input, Dense, Flatten, Dropout, Embedding, BatchNormalization, AveragePooling2D
-from keras.layers.convolutional import Conv1D, MaxPooling1D
-from keras.layers import concatenate
-from keras import regularizers, models, layers
+from typing import Dict
+from keras.layers import Dense, Flatten, Dropout, BatchNormalization, AveragePooling2D
+from keras import models, layers
 from keras.models import Model
-from tensorflow.keras.optimizers import Adadelta, Adam, SGD
-from keras.applications.densenet import DenseNet121
 from keras.layers import LSTM
 
 # https://github.com/keras-team/keras/issues/7403
