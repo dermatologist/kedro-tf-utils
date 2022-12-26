@@ -41,24 +41,6 @@ def create_tabular_pipeline(**kwargs) -> Pipeline:
 
                     ])
 
-def create_fusion_pipeline(**kwargs) -> Pipeline:
-    return pipeline([
-        node(
-            create_cnn_model,
-            inputs=["glove_embedding", "params:fusion"],
-            outputs="cnn_text_model",
-            name="create_cnn_model"
-        ),
-        node(
-            early_fusion_mm,
-            # params first followed by the models
-            inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
-            outputs="fusion_model",
-            name="create_fusion_model"
-        ),
-
-    ])
-
 early_fusion_mm_pipeline = pipeline([
     node(
         early_fusion_mm,
