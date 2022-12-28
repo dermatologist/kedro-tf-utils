@@ -12,30 +12,11 @@ from kedro_tf_text.pipelines.bert.nodes import get_tf_bert_model
 from kedro_tf_text.pipelines.tabular.nodes import tabular_model
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
 from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
+from kedro_tf_text.pipelines.bert.pipeline import create_bert_pipeline
+from kedro_tf_text.pipelines.tabular.pipeline import create_tabular_model_pipeline
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
-
-
-def create_bert_pipeline(**kwargs) -> Pipeline:
-    return pipeline([
-                    node(
-                        get_tf_bert_model,
-                        inputs=["bert_model", "params:bert_model"],
-                        outputs="bert_model_saved",
-                        name="build_bert_model"
-                    ),
-                    ])
-
-def create_tabular_pipeline(**kwargs) -> Pipeline:
-    return pipeline([
-                    node(
-                        tabular_model,
-                        inputs=["tabular_data", "params:fusion"],
-                        outputs="tabular_model_saved",
-                        name="create_tabular_model"
-                    ),
-                    ])
 
 def create_fusion_pipeline(**kwargs) -> Pipeline:
     inputs = {}
@@ -54,17 +35,8 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
                     ),
                     ])
 
-# early_fusion_mm_pipeline = pipeline([
-#     node(
-#         early_fusion_mm,
-#         # params first followed by the models
-#         # ! Parameters come first followed by the models. Note this when using this node in the pipeline
-#         inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
-#         outputs="fusion_model",
-#         name="create_fusion_model"
-#     ),
-# ])
 
+## Example fusion models. First is parameters, then the models prefixed with the model type
 fusion_inputs = {
     "parameters": "params:fusion",
     "cnn_text_model": "cnn_text_model",
