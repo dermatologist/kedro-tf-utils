@@ -36,7 +36,7 @@ def add_dense_layers(model, parameters):
 
 
 # ! Parameters come first followed by the models. Note this when using this node in the pipeline
-def early_fusion_mm(parameters: Dict, *args):
+def early_fusion_mm(**kwargs):
     """_summary_
 
     Args:
@@ -45,9 +45,10 @@ def early_fusion_mm(parameters: Dict, *args):
     Returns:
         _type_: _description_
     """
+    parameters = kwargs.pop("parameters")
     models_headless = []
     input_shapes = []
-    for model in args:
+    for name, model in kwargs.items():
         models_headless.append(last_layer_normalized(model))
         input_shapes.append(model.input)
     # A `Concatenate` layer requires inputs with matching shapes except for the concatenation axis.

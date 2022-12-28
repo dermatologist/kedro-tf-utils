@@ -17,7 +17,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
 
 
-def create_tabular_pipeline(**kwargs) -> Pipeline:
+def create_bert_pipeline(**kwargs) -> Pipeline:
     return pipeline([
                     node(
                         get_tf_bert_model,
@@ -25,31 +25,52 @@ def create_tabular_pipeline(**kwargs) -> Pipeline:
                         outputs="bert_model_saved",
                         name="build_bert_model"
                     ),
+                    ])
+
+def create_tabular_pipeline(**kwargs) -> Pipeline:
+    return pipeline([
                     node(
                         tabular_model,
                         inputs=["tabular_data", "params:fusion"],
-                        outputs="datasetinmemory",
-                        name="create_text_model"
+                        outputs="tabular_model_saved",
+                        name="create_tabular_model"
                     ),
+                    ])
+
+def create_fusion_pipeline(**kwargs) -> Pipeline:
+    inputs = {}
+    for name, data in kwargs.items():
+        inputs[name] = data
+    if not inputs:
+        inputs = {"params:fusion": "params:fusion", "bert_model_saved": "bert_model_saved", "tabular_model_saved": "tabular_model_saved"}
+    return pipeline([
                     node(
-                        early_fusion_mm, #! Parameters come first followed by the models. Note this when using this node in the pipeline
-                        inputs=["params:fusion", "datasetinmemory",
-                                "bert_model_saved"],  # any number of inputs
+                        early_fusion_mm,
+                        # params first followed by the models
+                        # ! Parameters come first followed by the models. Note this when using this node in the pipeline
+                        inputs=inputs,
                         outputs="fusion_model",
                         name="create_fusion_model"
                     ),
-
                     ])
 
-early_fusion_mm_pipeline = pipeline([
-    node(
-        early_fusion_mm,
-        # params first followed by the models
-        inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
-        outputs="fusion_model",
-        name="create_fusion_model"
-    ),
-])
+# early_fusion_mm_pipeline = pipeline([
+#     node(
+#         early_fusion_mm,
+#         # params first followed by the models
+#         # ! Parameters come first followed by the models. Note this when using this node in the pipeline
+#         inputs=["params:fusion", "cnn_text_model", "chexnet_model"],
+#         outputs="fusion_model",
+#         name="create_fusion_model"
+#     ),
+# ])
+
+fusion_inputs = {
+    "parameters": "params:fusion",
+    "cnn_text_model": "cnn_text_model",
+    "image_chexnet_model": "chexnet_model"
+}
+early_fusion_mm_pipeline = create_fusion_pipeline(**fusion_inputs)
 
 # Demonstrates the use of modular pipelines: https://kedro.readthedocs.io/en/stable/nodes_and_pipelines/modular_pipelines.html
 def create_text_fusion_pipeline(**kwargs) -> Pipeline:
