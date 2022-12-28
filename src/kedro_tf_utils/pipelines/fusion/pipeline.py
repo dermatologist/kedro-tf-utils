@@ -39,8 +39,8 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
 ## Example fusion models. First is parameters, then the models prefixed with the model type
 fusion_inputs = {
     "parameters": "params:fusion",
-    "cnn_text_model": "cnn_text_model",
-    "image_chexnet_model": "chexnet_model"
+    "text_model": "cnn_text_model",
+    "bert_model": "bert_model_saved",
 }
 early_fusion_mm_pipeline = create_fusion_pipeline(**fusion_inputs)
 

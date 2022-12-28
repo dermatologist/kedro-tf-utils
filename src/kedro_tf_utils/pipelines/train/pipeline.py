@@ -17,8 +17,8 @@ def create_train_pipeline(**kwargs) -> Pipeline:
     for name, data in kwargs.items():
         inputs[name] = data
     if not inputs:
-        inputs = {"parameters": "params:train", "model": "fusion_model", "tabular_data": "tabular_data",
-                  "bert_data": "bert_data"}
+        inputs = {"parameters": "params:train", "model": "fusion_model",
+                  "tabular_data": "tabular_data", "bert_data": "text_data"}
     return pipeline([
                     node(
                         train_multimodal,
