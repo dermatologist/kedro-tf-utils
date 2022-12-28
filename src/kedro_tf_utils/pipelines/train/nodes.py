@@ -4,7 +4,7 @@ generated using Kedro 0.18.4
 """
 import numpy as np
 from keras.optimizers import Adam
-
+from keras.layers import MaxPooling2D
 def train_multimodal(**kwargs):
     """
     Train multimodal model
@@ -21,7 +21,7 @@ def train_multimodal(**kwargs):
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             # column is a function that returns image data
-            imgs = np.array([np.array(_image_dataset[id]()) for id in ids])
+            imgs = np.array([np.array(_image_dataset[id]()).squeeze() for id in ids])
             x.append(imgs)
         elif type == "tabular":
             if parameters['TARGET'] in dataset.keys():
@@ -42,6 +42,9 @@ def train_multimodal(**kwargs):
             x.append(reports)
         else:
             raise ValueError("Unknown dataset type")
+
+
+    ## https: // stackoverflow.com/questions/49079115/valueerror-negative-dimension-size-caused-by-subtracting-2-from-1-for-max-pool
     model.compile(loss='binary_crossentropy',
                             optimizer=Adam(), metrics=['accuracy'])
 
