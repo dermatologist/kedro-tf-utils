@@ -7,6 +7,11 @@ tabular_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test_dataset.csv
 
+
+tabular_model:
+  type: pickle.PickleDataSet
+  filepath: data/06_models/tabular_model.pkl
+
 image_data:
   type: PartitionedDataSet
   dataset: pillow.ImageDataSet
