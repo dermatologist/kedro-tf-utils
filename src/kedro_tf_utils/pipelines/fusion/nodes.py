@@ -17,8 +17,8 @@ def last_layer_normalized(model):
         # https://stackoverflow.com/questions/58607787/bert-embedding-layer-raises-type-error-unsupported-operand-types-for-non
         last_layer = LSTM(128, name="LSTM", dropout=0.2,
                           recurrent_dropout=0.2, return_sequences=False)(model.output)
-        output = Dense(128, activation="softmax")(last_layer)
-        model_lstm = models.Model(model.input, output)
+        output = Dense(128, activation="softmax", name="DENSE_128")(last_layer)
+        model_lstm = models.Model(model.input, output, name="LSTM_Model")
         return model_lstm.output
 
 # https://github.com/artelab/Image-and-Text-fusion-for-UPMC-Food-101-using-BERT-and-CNNs/blob/main/stacking_early_fusion_UPMC_food101.ipynb
@@ -59,6 +59,6 @@ def early_fusion_mm(**kwargs):
     x = Dropout(.3)(x)
     x = BatchNormalization()(x)
     out = Dense(1, activation='softmax', name="fusion_1")(x)
-    multi_model = Model(input_shapes, out)
+    multi_model = Model(input_shapes, out, name="fusion_model")
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
     return multi_model
