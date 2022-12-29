@@ -12,6 +12,12 @@ from kedro.pipeline import Pipeline, pipeline
 from kedro_tf_utils.pipelines.fusion.pipeline import create_text_fusion_pipeline
 from kedro_tf_utils.pipelines.train_mm_simple.pipeline import create_bert_train_pipeline
 from kedro_tf_utils.pipelines.train.pipeline import create_train_pipeline
+from kedro_tf_text.pipelines.preprocess.pipeline import process_text_pipeline
+
+from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
+
+
+_process_text_pipeline = modular_pipeline(pipe=process_text_pipeline, parameters={"params:embedding": "params:fusion"})
 
 def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipelines.
@@ -21,6 +27,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     """
     return {
         "__default__": create_text_fusion_pipeline(),
+        "text": _process_text_pipeline,
         "report": create_text_fusion_pipeline(),
         "train": create_train_pipeline(),
         "bert_train": create_bert_train_pipeline(),

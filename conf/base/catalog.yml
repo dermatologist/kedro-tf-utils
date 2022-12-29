@@ -46,6 +46,9 @@ text_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test_report.csv
 
+processed_text:
+  type: pickle.PickleDataSet
+  filepath: data/02_intermediate/processed_text.pkl
 
 bert_data:
   type: pandas.CSVDataSet
@@ -70,10 +73,6 @@ glove_embedding:
 cnn_text_model:
   type: pickle.PickleDataSet
   filepath: data/06_models/cnn_text_model.pkl
-
-processed_text:
-  type: pickle.PickleDataSet
-  filepath: data/03_primary/processed-text.pkl
 
 bert_model:
   type: kedro_tf_text.extras.datasets.bert_model_download.BertModelDownload
