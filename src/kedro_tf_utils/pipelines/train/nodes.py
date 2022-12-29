@@ -18,19 +18,18 @@ def train_multimodal(**kwargs):
         type = name.split("_")[0]
         if parameters['ID'] in dataset.keys():
             dataset = dataset.sort_values(by=[parameters['ID']])
+        # Get data from processed dataset and Y from original csv dataset (below)
         if type == "processed":
             text = [dataset[id] for id in dataset.keys()]
             text = np.array([list(text)])
             text = np.squeeze(text, axis=0)
             x.append(text)
-            print(text.shape) # (4,140)
+            print(text.shape) # (4,140)  #TODO: The max seq length used for builing the model is 100, change this in cnn_model in kedro_tf_text
         elif type == "image":
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             # column is a function that returns image data
-
             imgs = [_image_dataset[id]().squeeze() for id in ids]
-            # x.append(np.array([list(imgs)]))
             imgs = np.array(imgs)
             print(imgs.shape) # (4, 224, 224, 3)
             x.append(imgs)
@@ -46,16 +45,10 @@ def train_multimodal(**kwargs):
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
             x.append(reports)
+        # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":
-            #reports = dataset.pop(parameters['REPORT_FIELD'])
-            # print(dataset)
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
-            # csv_features_dict = np.array(np.array([dataset[parameters['REPORT_FIELD']]]))
-            # csv_features_dict = [ value for name, value in reports.items()]
-            # csv_features_dict = np.array([list(csv_features_dict)])
-            # csv_features_dict = tf.convert_to_tensor(np.array(dataset))
-            # x.append(csv_features_dict)
         else:
             raise ValueError("Unknown dataset type")
 
