@@ -6,6 +6,7 @@ import numpy as np
 from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 import tensorflow as tf
+import logging
 def train_multimodal(**kwargs):
     """
     Train multimodal model
@@ -16,22 +17,22 @@ def train_multimodal(**kwargs):
     y = None
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
-        if parameters['ID'] in dataset.keys():
-            dataset = dataset.sort_values(by=[parameters['ID']])
+        try:
+            if parameters['ID'] in dataset.keys():
+                dataset = dataset.sort_values(by=[parameters['ID']])
+        except:
+            pass
         # Get data from processed dataset and Y from original csv dataset (below)
         if type == "processed":
-            text = [dataset[id] for id in dataset.keys()]
-            text = np.array([list(text)])
-            text = np.squeeze(text, axis=0)
-            x.append(text)
-            print(text.shape) # (4,140)  #TODO: The max seq length used for builing the model is 100, change this in cnn_model in kedro_tf_text
+            x.append(dataset)
+            logging.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
         elif type == "image":
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             # column is a function that returns image data
             imgs = [_image_dataset[id]().squeeze() for id in ids]
             imgs = np.array(imgs)
-            print(imgs.shape) # (4, 224, 224, 3)
+            logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
         elif type == "tabular":
             if parameters['TARGET'] in dataset.keys():

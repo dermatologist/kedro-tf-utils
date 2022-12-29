@@ -7,7 +7,7 @@ from keras.layers import Dense, Flatten, Dropout, BatchNormalization, AveragePoo
 from keras import models, layers
 from keras.models import Model
 from keras.layers import LSTM
-
+import logging
 # https://github.com/keras-team/keras/issues/7403
 def last_layer_normalized(model):
     last_layer = model.layers[-2].output
@@ -60,4 +60,5 @@ def early_fusion_mm(**kwargs):
     x = BatchNormalization()(x)
     out = Dense(1, activation='softmax')(x)
     multi_model = Model(input_shapes, out)
+    logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
     return multi_model

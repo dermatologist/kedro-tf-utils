@@ -42,10 +42,10 @@ early_fusion_mm_pipeline = create_fusion_pipeline(**fusion_inputs)
 
 # Demonstrates the use of modular pipelines: https://kedro.readthedocs.io/en/stable/nodes_and_pipelines/modular_pipelines.html
 def create_text_fusion_pipeline(**kwargs) -> Pipeline:
-    _preprocess_text_pipeline = modular_pipeline(pipe=process_text_pipeline, parameters={
-        "params:embedding": "params:fusion"})
     text_fusion_pipeline = modular_pipeline(pipe=glove_embedding, parameters={
                                             "params:embedding": "params:fusion"})
+    _preprocess_text_pipeline = modular_pipeline(pipe=process_text_pipeline, parameters={
+        "params:embedding": "params:fusion"})
     _cnn_text_pipeline = modular_pipeline(pipe=cnn_text_pipeline, parameters={
         "params:cnn_text_model": "params:fusion"})
     return _preprocess_text_pipeline + text_fusion_pipeline + _cnn_text_pipeline + early_fusion_mm_pipeline
