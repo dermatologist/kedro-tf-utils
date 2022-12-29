@@ -7,13 +7,9 @@ from kedro.pipeline import Pipeline, node, pipeline
 from kedro_tf_utils.pipelines.fusion.nodes import early_fusion_mm
 
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
-from kedro_tf_text.pipelines.preprocess.pipeline import word2vec_embedding
-from kedro_tf_text.pipelines.bert.nodes import get_tf_bert_model
-from kedro_tf_text.pipelines.tabular.nodes import tabular_model
+from kedro_tf_text.pipelines.preprocess.pipeline import glove_embedding, process_text_pipeline
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
 from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
-from kedro_tf_text.pipelines.bert.pipeline import create_bert_pipeline
-from kedro_tf_text.pipelines.tabular.pipeline import create_tabular_model_pipeline
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
@@ -46,8 +42,10 @@ early_fusion_mm_pipeline = create_fusion_pipeline(**fusion_inputs)
 
 # Demonstrates the use of modular pipelines: https://kedro.readthedocs.io/en/stable/nodes_and_pipelines/modular_pipelines.html
 def create_text_fusion_pipeline(**kwargs) -> Pipeline:
-    text_fusion_pipeline = modular_pipeline(pipe=word2vec_embedding, parameters={
+    _preprocess_text_pipeline = modular_pipeline(pipe=process_text_pipeline, parameters={
+        "params:embedding": "params:fusion"})
+    text_fusion_pipeline = modular_pipeline(pipe=glove_embedding, parameters={
                                             "params:embedding": "params:fusion"})
     _cnn_text_pipeline = modular_pipeline(pipe=cnn_text_pipeline, parameters={
         "params:cnn_text_model": "params:fusion"})
-    return text_fusion_pipeline + _cnn_text_pipeline + early_fusion_mm_pipeline
+    return _preprocess_text_pipeline + text_fusion_pipeline + _cnn_text_pipeline + early_fusion_mm_pipeline
