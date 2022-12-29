@@ -18,7 +18,7 @@ def create_train_pipeline(**kwargs) -> Pipeline:
         inputs[name] = data
     if not inputs:
         inputs = {"parameters": "params:train", "model": "fusion_model",
-                  "text_data": "text_data", "image_data": "image_data"}
+                  "processed_text": "processed_text", "text_data": "text_data", "image_data": "image_data"}
     return pipeline([
                     node(
                         train_multimodal,
