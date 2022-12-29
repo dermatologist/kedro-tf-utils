@@ -54,13 +54,13 @@ bert_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test_report.csv
 
-pretrained_embedding:
-  type: text.TextDataSet
-  filepath: data/04_feature/new_data_embed300.txt
+# pretrained_embedding:
+#   type: text.TextDataSet
+#   filepath: data/04_feature/new_data_embed300.txt
 
-vocab_json:
-  type: json.JSONDataSet
-  filepath: data/04_feature/vocab.json
+# vocab_json:
+#   type: json.JSONDataSet
+#   filepath: data/04_feature/vocab.json
 
 word2vec_embedding:
   type: pickle.PickleDataSet
@@ -88,6 +88,6 @@ bert_model_saved:
     overwrite: True
     include_optimizer: False
 
-tabular_bert_trained:
+trained_model:
   type: tensorflow.TensorFlowModelDataset
-  filepath: data/07_model_output/tabular-bert-trained
+  filepath: data/07_model_output/trained-model
