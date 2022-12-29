@@ -10,6 +10,7 @@ from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
 from kedro_tf_text.pipelines.preprocess.pipeline import glove_embedding, process_text_pipeline
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
 from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
+from kedro_tf_text.pipelines.tabular.pipeline import tabular_model_pipeline
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
@@ -31,7 +32,7 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
                     ),
                     ])
 
-
+## Text + Image
 ## Example fusion models. First is parameters, then the models prefixed with the model type
 fusion_inputs = {
     "parameters": "params:fusion",
@@ -49,3 +50,22 @@ def create_text_fusion_pipeline(**kwargs) -> Pipeline:
     _cnn_text_pipeline = modular_pipeline(pipe=cnn_text_pipeline, parameters={
         "params:cnn_text_model": "params:fusion"})
     return _preprocess_text_pipeline + text_fusion_pipeline + _cnn_text_pipeline + early_fusion_mm_pipeline
+
+
+# Tabular + Image
+# Example fusion models. First is parameters, then the models prefixed with the model type
+tabular_fusion_inputs = {
+    "parameters": "params:fusion",
+    "tabular_model": "tabular_model",
+    "image_model": "chexnet_model",
+}
+tabular_early_fusion_mm_pipeline = create_fusion_pipeline(**tabular_fusion_inputs)
+
+# Demonstrates the use of modular pipelines: https://kedro.readthedocs.io/en/stable/nodes_and_pipelines/modular_pipelines.html
+
+
+def create_tabular_fusion_pipeline(**kwargs) -> Pipeline:
+    _tabular_model_pipeline = modular_pipeline(pipe=tabular_model_pipeline, parameters={
+                                            "params:tabular": "params:fusion"})
+
+    return _tabular_model_pipeline + tabular_early_fusion_mm_pipeline

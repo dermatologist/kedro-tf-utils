@@ -9,8 +9,8 @@ tabular_data:
 
 
 tabular_model:
-  type: pickle.PickleDataSet
-  filepath: data/06_models/tabular_model.pkl
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/06_models/tabular-model
 
 # image_data:
 #   type: PartitionedDataSet

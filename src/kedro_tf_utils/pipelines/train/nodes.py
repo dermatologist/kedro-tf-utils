@@ -40,6 +40,7 @@ def train_multimodal(**kwargs):
             dataset.drop(parameters['DROP'], axis=1, inplace=True)
             csv_features_dict = {name: np.array(value)
                                  for name, value in dataset.items()}
+            print(csv_features_dict)
             x.append(csv_features_dict)
         elif type == "bert":
             reports = dataset.pop(parameters['REPORT_FIELD'])

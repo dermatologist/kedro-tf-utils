@@ -53,12 +53,12 @@ def early_fusion_mm(**kwargs):
         input_shapes.append(model.input)
     # A `Concatenate` layer requires inputs with matching shapes except for the concatenation axis.
     # Received: input_shape=[(None, 6), (None, 128, 128), (None, 1024)]
-    fusion = layers.Concatenate()(models_headless)
+    fusion = layers.Concatenate(name="fusion_head_1")(models_headless)
     x = BatchNormalization()(fusion)
     x = Dense(512, activation='relu')(x)
     x = Dropout(.3)(x)
     x = BatchNormalization()(x)
-    out = Dense(1, activation='softmax')(x)
+    out = Dense(1, activation='softmax', name="fusion_1")(x)
     multi_model = Model(input_shapes, out)
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
     return multi_model
