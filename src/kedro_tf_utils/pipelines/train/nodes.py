@@ -40,12 +40,13 @@ def train_multimodal(**kwargs):
             dataset.drop(parameters['DROP'], axis=1, inplace=True)
             csv_features_dict = {name: np.array(value)
                                  for name, value in dataset.items()}
-            print(csv_features_dict)
+            logging.info("Tabular dataset")  # List
             x.append(csv_features_dict)
         elif type == "bert":
             reports = dataset.pop(parameters['REPORT_FIELD'])
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
+            logging.info("BERT dataset") 
             x.append(reports)
         # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":

@@ -11,6 +11,8 @@ from kedro_tf_utils.pipelines.train.nodes import train_multimodal
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline([])
 
+# ! Modify to take in the correct inputs
+
 
 # def create_train_pipeline(**kwargs) -> Pipeline:
 #     inputs = {}

@@ -27,8 +27,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
     """
     return {
         "__default__": create_text_fusion_pipeline(),
+        "text": create_text_fusion_pipeline(),
         "tabular": create_tabular_fusion_pipeline(),
-        "train": create_train_pipeline(),
         "bert": create_bert_fusion_pipeline(),
+        "train": create_train_pipeline(),
         }
 
