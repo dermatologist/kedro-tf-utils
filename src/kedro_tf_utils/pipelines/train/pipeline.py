@@ -54,8 +54,12 @@ def create_pipeline(**kwargs) -> Pipeline:
 
 def create_train_pipeline(**kwargs) -> Pipeline:
     inputs = {}
+    outputs = "trained_model"
     for name, data in kwargs.items():
-        inputs[name] = data
+        if name == "outputs":
+            outputs = data
+        else:
+            inputs[name] = data
     if not inputs:
         inputs = {"parameters": "params:train", "model": "fusion_model",
                   "bert_data": "text_data", "image_data": "image_data"}
@@ -65,7 +69,7 @@ def create_train_pipeline(**kwargs) -> Pipeline:
                         # params first followed by the models
                         # ! Parameters come first followed by the models. Note this when using this node in the pipeline
                         inputs=inputs,
-                        outputs="trained_model",
+                        outputs=outputs,
                         name="create_trained_model"
                     ),
                     ])

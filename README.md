@@ -1,6 +1,13 @@
-# Kedro Tf Utils
+# Kedro Tf Utils:
 
-## Work in progress, DO NOT USE.
+Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports. Currently implements only early fusion. Late fusion is work in progress.
+
+See [Example](https://github.com/dermatologist/kedro-multimodal)
+
+
+## How to install
+
+- pip install git+https://github.com/dermatologist/kedro-tf-utils.git
 
 ## How to build fusion model
 
@@ -11,14 +18,45 @@ from from kedro_tf_utils.pipelines.fusion.pipelines import create_fusion_pipelin
 fusion_inputs = {
     "parameters": "params:fusion",
     "tabular_model": "tabular_model",
+    "bert_model": "bert_model",
+    "text_model": "text_model"
     "image_model": "chexnet_model",
 }
 fusion_pipeline = create_fusion_pipeline(**fusion_inputs)
 
+# In pipeline_registry
 "__default__": other_pipelines + fusion_pipeline
 ```
 
-## Overview
+## How to build training pipeline
+
+```
+from from kedro_tf_utils.pipelines.fusion.pipelines import create_train_pipeline
+
+# model and outputs are required
+args = {"parameters": "params:train", "model": "fusion_model",
+                  "bert_data": "text_data", "image_data": "image_data", "outputs": "trained_model"}
+train_pipeline = create_train_pipeline(**args)
+# In pipeline_registry
+"__default__": train_pipeline
+```
+
+## [Catalogue](conf/base/catalog.yml)
+
+```
+fusion_model:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/07_model_output/fusion
+
+trained_model:
+  type: tensorflow.TensorFlowModelDataset
+  filepath: data/07_model_output/trained-model
+```
+
+## Contributors
+
+* [Bell Eapen](https://nuchange.ca) | [![Twitter Follow](https://img.shields.io/twitter/follow/beapen?style=social)](https://twitter.com/beapen)
+## Kedro Overview
 
 This is your new Kedro project, which was generated using `Kedro 0.18.1`.
 
