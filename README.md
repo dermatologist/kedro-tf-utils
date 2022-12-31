@@ -2,6 +2,22 @@
 
 ## Work in progress, DO NOT USE.
 
+## How to build fusion model
+
+```
+from from kedro_tf_utils.pipelines.fusion.pipelines import create_fusion_pipeline
+
+# Add any number of models after parameters
+fusion_inputs = {
+    "parameters": "params:fusion",
+    "tabular_model": "tabular_model",
+    "image_model": "chexnet_model",
+}
+fusion_pipeline = create_fusion_pipeline(**fusion_inputs)
+
+"__default__": other_pipelines + fusion_pipeline
+```
+
 ## Overview
 
 This is your new Kedro project, which was generated using `Kedro 0.18.1`.
