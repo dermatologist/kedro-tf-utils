@@ -14,7 +14,8 @@ tensorflow
 pandas
 #deeptables
 nltk
-kedro_tf_text @ git+https://github.com/dermatologist/kedro-tf-text.git@feature/breaking-changes-1
+kedro_tf_text @ git+https://github.com/dermatologist/kedro-tf-text.git@develop
+kedro_tf_image @ git+https://github.com/dermatologist/kedro-tf-image.git@develop
 python-json-logger
 Pillow
 scikit-learn

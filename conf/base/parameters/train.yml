@@ -1,10 +1,12 @@
-# This is a boilerplate parameters config generated for pipeline 'train_mm_simple'
+# This is a boilerplate parameters config generated for pipeline 'train'
 # using Kedro 0.18.4.
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.4/kedro_project_setup/configuration.html#parameters
-
-train_model:
-  TARGET: dm
-  DROP: ['name', 'id']
+train:
+  MAX_LENGTH: 40
+  NCLASSES: 3
+  REPORT_FIELD: report
   ID: id
+  TARGET: dm
+  DROP: ["name", "id"]

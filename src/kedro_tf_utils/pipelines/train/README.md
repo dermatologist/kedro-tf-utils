@@ -1,4 +1,4 @@
-# Pipeline train_mm_simple
+# Pipeline train
 
 > *Note:* This is a `README.md` boilerplate generated using `Kedro 0.18.4`.
 
