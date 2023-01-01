@@ -42,7 +42,7 @@ def fusion(**kwargs) -> Model:
     models_headless = []
     input_shapes = []
 
-    if parameters['EARLAY_FUSION']=='early':
+    if parameters['EARLY_FUSION']=='early':
         logging.info("Early fusion")
         for name, model in kwargs.items():
             for layer in model.layers:
@@ -60,7 +60,7 @@ def fusion(**kwargs) -> Model:
     fusion = layers.Concatenate(name="fusion_head_1")(models_headless)
     x = BatchNormalization()(fusion)
 
-    if parameters['EARLAY_FUSION']=='early':
+    if parameters['EARLY_FUSION']=='early':
         x = Dense(256, activation='relu', name="DENSE_256_fusion")(x)
         x = Dropout(.2)(x)
         out = Dense(parameters['NCLASSES'], activation='softmax', name="fusion_1")(x)
