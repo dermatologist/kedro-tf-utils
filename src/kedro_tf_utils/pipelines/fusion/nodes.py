@@ -2,12 +2,21 @@
 This is a boilerplate pipeline 'fusion'
 generated using Kedro 0.18.1
 """
-from typing import Dict
-from keras.layers import Dense, Flatten, Dropout, BatchNormalization, AveragePooling2D
-from keras import models, layers
-from keras.models import Model
-from keras.layers import LSTM
 import logging
+from typing import Dict
+
+from keras import layers, models
+from keras.layers import (
+    LSTM,
+    AveragePooling2D,
+    BatchNormalization,
+    Dense,
+    Dropout,
+    Flatten,
+)
+from keras.models import Model
+
+
 # https://github.com/keras-team/keras/issues/7403
 def last_layer_normalized(model):
     last_layer = model.layers[-2].output
@@ -23,7 +32,7 @@ def last_layer_normalized(model):
         return model_lstm.output
 
 # ! Parameters come first followed by the models. Note this when using this node in the pipeline
-def early_fusion_mm(**kwargs) -> Model:
+def fusion(**kwargs) -> Model:
     """_summary_
 
     Returns:
@@ -32,6 +41,7 @@ def early_fusion_mm(**kwargs) -> Model:
     parameters = kwargs.pop("parameters") # ! Parameters come first followed by the models. Note this when using this node in the pipeline
     models_headless = []
     input_shapes = []
+
     if parameters['EARLAY_FUSION']=='early':
         logging.info("Early fusion")
         for name, model in kwargs.items():
@@ -42,6 +52,7 @@ def early_fusion_mm(**kwargs) -> Model:
         for name, model in kwargs.items():
             for layer in model.layers:
                 layer.trainable = False
+
     for name, model in kwargs.items():
         logging.info("Adding Model: {}".format(name))
         models_headless.append(last_layer_normalized(model))
@@ -59,6 +70,7 @@ def early_fusion_mm(**kwargs) -> Model:
         x = layers.Dense(128, activation='relu', name='Dense_128')(x)
         x = layers.Dropout(0.2)(x)
         out = layers.Dense(parameters['NCLASSES'], activation='softmax', name="class")(x)
+
     multi_model = Model(input_shapes, out, name="fusion_model")
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
     return multi_model
