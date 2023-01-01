@@ -42,7 +42,7 @@ def fusion(**kwargs) -> Model:
     models_headless = []
     input_shapes = []
 
-    if parameters['EARLY_FUSION']=='early':
+    if parameters['EARLY_FUSION']: #True
         logging.info("Early fusion")
         for name, model in kwargs.items():
             for layer in model.layers:
@@ -60,16 +60,16 @@ def fusion(**kwargs) -> Model:
     fusion = layers.Concatenate(name="fusion_head_1")(models_headless)
     x = BatchNormalization()(fusion)
 
-    if parameters['EARLY_FUSION']=='early':
+    if parameters['EARLY_FUSION']:
         x = Dense(256, activation='relu', name="DENSE_256_fusion")(x)
         x = Dropout(.2)(x)
         out = Dense(parameters['NCLASSES'], activation='softmax', name="fusion_1")(x)
     else: # Late fusion
-        x = layers.Dense(256, activation='relu', name='Dense_256')(x)
-        x = layers.Dropout(0.2)(x)
-        x = layers.Dense(128, activation='relu', name='Dense_128')(x)
-        x = layers.Dropout(0.2)(x)
-        out = layers.Dense(parameters['NCLASSES'], activation='softmax', name="class")(x)
+        x = Dense(256, activation='relu', name='Dense_256')(x)
+        x = Dropout(0.2)(x)
+        x = Dense(128, activation='relu', name='Dense_128')(x)
+        x = Dropout(0.2)(x)
+        out = Dense(parameters['NCLASSES'], activation='softmax', name="class")(x)
 
     multi_model = Model(input_shapes, out, name="fusion_model")
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
