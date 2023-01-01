@@ -32,16 +32,34 @@ def early_fusion_mm(**kwargs) -> Model:
     parameters = kwargs.pop("parameters") # ! Parameters come first followed by the models. Note this when using this node in the pipeline
     models_headless = []
     input_shapes = []
+    if parameters['EARLAY_FUSION']=='early':
+        logging.info("Early fusion")
+        for name, model in kwargs.items():
+            for layer in model.layers:
+                layer.trainable = True
+    else:
+        logging.info("Late fusion")
+        for name, model in kwargs.items():
+            for layer in model.layers:
+                layer.trainable = False
     for name, model in kwargs.items():
         logging.info("Adding Model: {}".format(name))
         models_headless.append(last_layer_normalized(model))
         input_shapes.append(model.input)
     fusion = layers.Concatenate(name="fusion_head_1")(models_headless)
     x = BatchNormalization()(fusion)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(.3)(x)
-    x = BatchNormalization()(x)
-    out = Dense(1, activation='softmax', name="fusion_1")(x)
+
+    if parameters['EARLAY_FUSION']=='early':
+        x = Dense(256, activation='relu', name="DENSE_256_fusion")(x)
+        x = Dropout(.2)(x)
+        out = Dense(parameters['NCLASSES'], activation='softmax', name="fusion_1")(x)
+    else: # Late fusion
+        x = layers.Dense(256, activation='relu', name='Dense_256')(x)
+        x = layers.Dropout(0.2)(x)
+        x = layers.Dense(128, activation='relu', name='Dense_128')(x)
+        x = layers.Dropout(0.2)(x)
+        out = layers.Dense(parameters['NCLASSES'], activation='softmax', name="class")(x)
     multi_model = Model(input_shapes, out, name="fusion_model")
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
     return multi_model
+
