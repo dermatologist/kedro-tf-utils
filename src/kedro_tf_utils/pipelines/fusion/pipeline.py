@@ -4,14 +4,16 @@ generated using Kedro 0.18.1
 """
 
 from kedro.pipeline import Pipeline, node, pipeline
-from kedro_tf_utils.pipelines.fusion.nodes import early_fusion_mm
-
 from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
-from kedro_tf_text.pipelines.preprocess.pipeline import glove_embedding, process_text_pipeline
-from kedro.pipeline.modular_pipeline import pipeline as modular_pipeline
-from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
-from kedro_tf_text.pipelines.tabular.pipeline import tabular_model_pipeline
 from kedro_tf_text.pipelines.bert.pipeline import download_bert
+from kedro_tf_text.pipelines.cnn.pipeline import cnn_text_pipeline
+from kedro_tf_text.pipelines.preprocess.pipeline import (
+    glove_embedding,
+    process_text_pipeline,
+)
+from kedro_tf_text.pipelines.tabular.pipeline import tabular_model_pipeline
+
+from kedro_tf_utils.pipelines.fusion.nodes import fusion
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -25,7 +27,7 @@ def create_fusion_pipeline(**kwargs) -> Pipeline:
         inputs = {"params:fusion": "params:fusion", "bert_model_saved": "bert_model_saved", "tabular_model_saved": "tabular_model_saved"}
     return pipeline([
                     node(
-                        early_fusion_mm,
+                        fusion,
                         # params first followed by the models
                         # ! Parameters come first followed by the models. Note this when using this node in the pipeline
                         inputs=inputs,
