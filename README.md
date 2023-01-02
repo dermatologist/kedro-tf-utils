@@ -1,6 +1,6 @@
 # Kedro Tf Utils:
 
-Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports. 
+Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports.
 See [Example](https://github.com/dermatologist/kedro-multimodal)
 
 [![kedro-tf-text](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)
@@ -42,7 +42,13 @@ train_pipeline = create_train_pipeline(**args)
 ```
 
 ## [Catalogue](conf/base/catalog.yml)
+## [params:fusion](conf/base/parameters/fusion.yml) | [params:train](conf/base/parameters/train.yml)
 
+## Troubleshoot
+
+* Downloaded BERT models will not copy vocab.txt in assets folder to the newly created fusion model. This has to be manually copied.
+* The class_num in TfModelWeights must be equal to to NCLASSES during training. Otherwise it throws an error:  Tensorflow estimator ValueError: logits and labels must have the same shape ((?, 1) vs (?,))
+* **The number of prediction classes should be equal for all models**. Otherwise leads to the above error
 ```
 fusion_model:
   type: tensorflow.TensorFlowModelDataset

@@ -72,7 +72,6 @@ class TestTrainPipeline:
             'tabular_data': tabular_data,
             'image_data': image_data
         }
+        data = train_multimodal(**train_input)
+        assert data is not None
 
-
-        with pytest.raises(ValueError):
-            data = train_multimodal(**train_input)

@@ -57,8 +57,10 @@ class TestProjectContext:
     def test_image_load(self, project_context):
         filepath = None
         architecture = "DenseNet121"
+        # class_num should be same as NCLASSES in config
+        # otherwise it will throw an error: Tensorflow estimator ValueError: logits and labels must have the same shape ((?, 1) vs (?,))
         load_args = {
-            "class_num": 14
+            "class_num": 1
         }
         data_set = TfModelWeights(filepath=filepath, architecture=architecture, load_args=load_args)
         model = data_set.load()
