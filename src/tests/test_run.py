@@ -16,6 +16,11 @@ from kedro.framework.project import settings
 from kedro.config import ConfigLoader
 from kedro.framework.context import KedroContext
 from kedro.framework.hooks import _create_hook_manager
+from kedro.extras.datasets.pandas import CSVDataSet
+from kedro.extras.datasets.tensorflow import TensorFlowModelDataset
+
+from kedro_tf_text.pipelines.tabular.nodes import tabular_model
+from kedro_tf_image.extras.datasets.tf_model_weights import TfModelWeights
 
 @pytest.fixture
 def config_loader():
@@ -31,34 +36,33 @@ def project_context(config_loader):
         hook_manager=_create_hook_manager(),
     )
 
-
-# The tests below are here for the demonstration purpose
-# and should be replaced with the ones testing the project
-# functionality
 class TestProjectContext:
     def test_project_path(self, project_context):
         assert project_context.project_path == Path.cwd()
 
-    # def test_tabular_model(self, project_context):
-    #     modelpath = "data/06_models/tabular_model"
-    #     load_args = dict()
-    #     load_args["custom_objects"] = dt_custom_objects
-    #     tf_model = TensorFlowModelDataset(filepath=modelpath, load_args=load_args)
-    #     reloaded = tf_model.load()
-    #     conf_params = project_context.config_loader.get('**/cnn_text_model.yml')
-    #     tabular_last_layer = last_layer_normalized(reloaded)
-    #     assert tabular_last_layer is not None
+    def test_tabular_model(self, project_context):
+        csvpath = "data/01_raw/test_dataset.csv"
+        tfpath = "data/06_models/tabular_model"
+        data_set = CSVDataSet(filepath=csvpath)
+        save_args = {
+            'save_format': 'tf'
+        }
+        tf_model = TensorFlowModelDataset(filepath=tfpath, save_args=save_args)
+        reloaded = data_set.load()
+        conf_params = project_context.config_loader.get('**/fusion.yml')
+        data = tabular_model(reloaded, conf_params['fusion'])
+        tf_model.save(data)
+        assert data is not None
 
-    # def test_image_load(self, project_context):
-    #     dataset = "kedro.extras.datasets.pillow.ImageDataSet"
-    #     path = 'data/01_raw/imageset'
-    #     filename_suffix = ".jpg"
-    #     partitioned_dataset = PartitionedDataSet(dataset=dataset, path=path, filename_suffix=filename_suffix)
-    #     reloaded = partitioned_dataset.load()
-    #     print(reloaded.keys())
-    #     assert reloaded is not None
-
-    # def test_cnn_model(self, project_context):
-    #     model = create_cnn_model(embedding_layer=None, num_words=1500,
-    #                              embedding_dim=300)
-    #     assert model is not None
+    def test_image_load(self, project_context):
+        filepath = None
+        architecture = "DenseNet121"
+        load_args = {
+            "class_num": 14
+        }
+        data_set = TfModelWeights(filepath=filepath, architecture=architecture, load_args=load_args)
+        model = data_set.load()
+        model_path = 'data/06_models/imageset'
+        tf_model = TensorFlowModelDataset(filepath=model_path)
+        tf_model.save(model)
+        assert model is not None
