@@ -47,8 +47,10 @@ class TestFusionPipeline:
     def test_fusion_model(self, project_context):
         tabular_path = "data/06_models/tabular_model"
         image_path = 'data/06_models/imageset'
+        fusion_path = 'data/06_models/fusion_model'
         _tabular_model = TensorFlowModelDataset(filepath=tabular_path)
         _image_model = TensorFlowModelDataset(filepath=image_path)
+        _fusion_model = TensorFlowModelDataset(filepath=fusion_path)
         tabular_model = _tabular_model.load()
         image_model = _image_model.load()
         conf_params = project_context.config_loader.get('**/fusion.yml')
@@ -58,6 +60,5 @@ class TestFusionPipeline:
             'image_model': image_model
         }
         data = fusion(**fusion_input)
+        _fusion_model.save(data)
         assert data is not None
-
-
