@@ -46,7 +46,7 @@ def train_multimodal(**kwargs):
             reports = dataset.pop(parameters['REPORT_FIELD'])
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
-            logging.info("BERT dataset") 
+            logging.info("BERT dataset")
             x.append(reports)
         # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":
@@ -64,3 +64,35 @@ def train_multimodal(**kwargs):
         y=y, batch_size=32, epochs=3, verbose=1,
         validation_data=None)
     return model
+
+
+def remove_incomplete(**kwargs):
+    """
+    Remove incomplete data
+    """
+    parameters = kwargs.pop("parameters")
+    model = kwargs.pop("model")
+    members = {}
+    for name, dataset in kwargs.items():
+        type = name.split("_")[0]
+        if type == "image":
+            members[name] = dataset[parameters['ID']].values
+            _image_dataset = dict(sorted(dataset.items()))
+            ids = _image_dataset.keys()
+            members[name] = ids
+        else:
+            members[name] = dataset[parameters['ID']].values
+    # Get intersection of all IDs
+    ids = set.intersection(*map(set, members.values()))
+    # Remove IDs that are not in intersection
+    for name, dataset in kwargs.items():
+        type = name.split("_")[0]
+        if type == "image":
+            _image_dataset = dict(sorted(dataset.items()))
+            ids = _image_dataset.keys()
+            for id in ids:
+                if id not in ids:
+                    del _image_dataset[id]
+            kwargs[name] = _image_dataset
+        else:
+            kwargs[name] = dataset[dataset[parameters['ID']].isin(ids)]
