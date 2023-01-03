@@ -46,7 +46,7 @@ def train_multimodal(**kwargs):
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             # Filter out IDs that are not in intersection
-            for id in ids:
+            for id in list(ids):  # REF: https://stackoverflow.com/questions/11941817/how-to-avoid-runtimeerror-dictionary-changed-size-during-iteration-error
                 if id not in intersection_ids:
                     del _image_dataset[id]
             # column is a function that returns image data
