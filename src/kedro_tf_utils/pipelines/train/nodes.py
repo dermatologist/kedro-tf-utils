@@ -21,7 +21,6 @@ def train_multimodal(**kwargs):
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
         if type == "image":
-            members[name] = dataset[parameters['ID']].values
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             members[name] = ids
