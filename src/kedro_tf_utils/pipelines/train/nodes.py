@@ -55,7 +55,7 @@ def train_multimodal(**kwargs):
             logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
         elif type == "tabular":
-            dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
             dataset.drop(parameters['DROP'], axis=1, inplace=True)
@@ -64,7 +64,7 @@ def train_multimodal(**kwargs):
             logging.info("Tabular dataset")  # List
             x.append(csv_features_dict)
         elif type == "bert":
-            dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             reports = dataset.pop(parameters['REPORT_FIELD'])
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
@@ -72,7 +72,7 @@ def train_multimodal(**kwargs):
             x.append(reports)
         # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":
-            dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
         else:
