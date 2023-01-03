@@ -15,6 +15,21 @@ def train_multimodal(**kwargs):
     model = kwargs.pop("model")
     x = []
     y = None
+
+    ## Get intersection of all IDs #############################################
+    members = {}
+    for name, dataset in kwargs.items():
+        type = name.split("_")[0]
+        if type == "image":
+            _image_dataset = dict(sorted(dataset.items()))
+            ids = _image_dataset.keys()
+            members[name] = ids
+        else:
+            members[name] = dataset[parameters['ID']].values
+    intersection_ids = set.intersection(*map(set, members.values()))
+    logging.info("Intersection of IDs: {}".format(len(intersection_ids)))
+    ## Get intersection of all IDs #############################################
+
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
         try:
@@ -24,17 +39,23 @@ def train_multimodal(**kwargs):
             pass
         # Get data from processed dataset and Y from original csv dataset (below)
         if type == "processed":
+            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             x.append(dataset)
             logging.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
         elif type == "image":
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
+            # Filter out IDs that are not in intersection
+            for id in ids:
+                if id not in intersection_ids:
+                    del _image_dataset[id]
             # column is a function that returns image data
             imgs = [_image_dataset[id]().squeeze() for id in ids]
             imgs = np.array(imgs)
             logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
         elif type == "tabular":
+            dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
             dataset.drop(parameters['DROP'], axis=1, inplace=True)
@@ -43,13 +64,15 @@ def train_multimodal(**kwargs):
             logging.info("Tabular dataset")  # List
             x.append(csv_features_dict)
         elif type == "bert":
+            dataset[dataset[parameters['ID']].isin(intersection_ids)]
             reports = dataset.pop(parameters['REPORT_FIELD'])
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
-            logging.info("BERT dataset") 
+            logging.info("BERT dataset")
             x.append(reports)
         # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":
+            dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
         else:
