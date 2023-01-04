@@ -49,8 +49,15 @@ def train_multimodal(**kwargs):
             for id in list(ids):  # REF: https://stackoverflow.com/questions/11941817/how-to-avoid-runtimeerror-dictionary-changed-size-during-iteration-error
                 if id not in intersection_ids:
                     del _image_dataset[id]
-            # column is a function that returns image data
-            imgs = [_image_dataset[id]().squeeze() for id in ids]
+            imgs = []
+            for id in _image_dataset.keys():
+                # column is a function that returns image data
+                img = _image_dataset[id]().squeeze()
+                img = tf.convert_to_tensor(img, dtype=tf.float32)
+                if img.shape[-1] == 1: # If grayscale, convert to RGB
+                    img = tf.image.grayscale_to_rgb(img)
+                imgs.append(img)
+            # convert back to numpy array
             imgs = np.array(imgs)
             logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
