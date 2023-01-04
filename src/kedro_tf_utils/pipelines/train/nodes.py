@@ -37,12 +37,8 @@ def train_multimodal(**kwargs):
                 dataset = dataset.sort_values(by=[parameters['ID']])
         except:
             pass
-        # Get data from processed dataset and Y from original csv dataset (below)
-        if type == "processed":
-            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
-            x.append(dataset)
-            logging.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
-        elif type == "image":
+
+        if type == "image":
             _image_dataset = dict(sorted(dataset.items()))
             ids = _image_dataset.keys()
             # Filter out IDs that are not in intersection
@@ -52,15 +48,25 @@ def train_multimodal(**kwargs):
             imgs = []
             for id in _image_dataset.keys():
                 # column is a function that returns image data
-                img = _image_dataset[id]().squeeze()
-                img = tf.convert_to_tensor(img, dtype=tf.float32)
-                if img.shape[-1] == 1: # If grayscale, convert to RGB
-                    img = tf.image.grayscale_to_rgb(img)
-                imgs.append(img)
+                try:
+                    img = _image_dataset[id]().squeeze()
+                    img = tf.convert_to_tensor(img, dtype=tf.float32)
+                    if img.shape[-1] == 1:  # If grayscale, convert to RGB
+                        img = tf.image.grayscale_to_rgb(img)
+                    imgs.append(img)
+                except:
+                    # image failed to load
+                    logging.info("Image failed to load: {}".format(id))
+                    intersection_ids.remove(id)
             # convert back to numpy array
             imgs = np.array(imgs)
             logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
+        # Get data from processed dataset and Y from original csv dataset (below)
+        elif type == "processed":
+            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            x.append(dataset)
+            logging.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
         elif type == "tabular":
             dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
