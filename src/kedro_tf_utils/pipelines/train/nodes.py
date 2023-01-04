@@ -27,7 +27,6 @@ def train_multimodal(**kwargs):
         else:
             members[name] = dataset[parameters['ID']].values
     intersection_ids = set.intersection(*map(set, members.values()))
-    logging.info("Intersection of IDs: {}".format(len(intersection_ids)))
     ## Get intersection of all IDs #############################################
 
     for name, dataset in kwargs.items():
@@ -90,6 +89,8 @@ def train_multimodal(**kwargs):
                 y = dataset.pop(parameters['TARGET'])
         else:
             raise ValueError("Unknown dataset type")
+
+    logging.info("Intersection of IDs: {}".format(len(intersection_ids)))
 
     ## https: // stackoverflow.com/questions/49079115/valueerror-negative-dimension-size-caused-by-subtracting-2-from-1-for-max-pool
     model.compile(loss='binary_crossentropy',
