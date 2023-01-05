@@ -1,7 +1,6 @@
 # Kedro Tf Utils:
 
-Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports.
-See [Example](https://github.com/dermatologist/kedro-multimodal)
+Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports. Use this [template](https://github.com/dermatologist/kedro-multimodal) to import these pipelines and perform multi-modal ML.
 
 [![kedro-tf-text](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)
 
