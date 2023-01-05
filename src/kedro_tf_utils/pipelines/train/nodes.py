@@ -7,6 +7,8 @@ from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 import tensorflow as tf
 import logging
+logger = logging.getLogger(__name__)
+
 def train_multimodal(**kwargs):
     """
     Train multimodal model
@@ -27,6 +29,7 @@ def train_multimodal(**kwargs):
         else:
             members[name] = dataset[parameters['ID']].values
     intersection_ids = set.intersection(*map(set, members.values()))
+    logger.info("Intersection of IDs before image loading: {}".format(len(intersection_ids)))
     ## Get intersection of all IDs #############################################
 
     for name, dataset in kwargs.items():
@@ -55,17 +58,17 @@ def train_multimodal(**kwargs):
                     imgs.append(img)
                 except:
                     # image failed to load
-                    logging.info("Image failed to load: {}".format(id))
+                    logger.info("Image failed to load: {}".format(id))
                     intersection_ids.remove(id)
             # convert back to numpy array
             imgs = np.array(imgs)
-            logging.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
+            logger.info("Image dataset shape: {}".format(imgs.shape))  # (4, 224, 224, 3)
             x.append(imgs)
         # Get data from processed dataset and Y from original csv dataset (below)
         elif type == "processed":
             dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             x.append(dataset)
-            logging.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
+            logger.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
         elif type == "tabular":
             dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             if parameters['TARGET'] in dataset.keys():
@@ -73,14 +76,14 @@ def train_multimodal(**kwargs):
             dataset.drop(parameters['DROP'], axis=1, inplace=True)
             csv_features_dict = {name: np.array(value)
                                  for name, value in dataset.items()}
-            logging.info("Tabular dataset")  # List
+            logger.info("Tabular dataset")  # List
             x.append(csv_features_dict)
         elif type == "bert":
             dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
             reports = dataset.pop(parameters['REPORT_FIELD'])
             if parameters['TARGET'] in dataset.keys():
                 y = dataset.pop(parameters['TARGET'])
-            logging.info("BERT dataset")
+            logger.info("BERT dataset")
             x.append(reports)
         # Get data from processed dataset (above) and Y from original csv dataset here
         elif type == "text":
@@ -90,14 +93,40 @@ def train_multimodal(**kwargs):
         else:
             raise ValueError("Unknown dataset type")
 
-    logging.info("Intersection of IDs: {}".format(len(intersection_ids)))
+    logger.info("Final intersection of IDs: {}".format(len(intersection_ids)))
 
     ## https: // stackoverflow.com/questions/49079115/valueerror-negative-dimension-size-caused-by-subtracting-2-from-1-for-max-pool
     model.compile(loss='binary_crossentropy',
                             optimizer=Adam(), metrics=['accuracy'])
 
-    hist = model.fit(
-        x=x,
-        y=y, batch_size=32, epochs=3, verbose=1,
-        validation_data=None)
+
+    evaluate = parameters.get('EVALUATE', False)
+    if evaluate:
+        logger.info("Evaluating model")
+        score = model.evaluate(x, y, batch_size=parameters.get('BATCH_SIZE', 32), verbose=1)
+        logger.info("Score: {}".format(score))
+        return score
+    else:
+        logger.info("Training model")
+        hist = model.fit(
+            x=x,
+            y=y,
+            batch_size=parameters.get('BATCH_SIZE', 32),
+            epochs=parameters.get('EPOCHS', 10),
+            verbose='auto',
+            callbacks=None,
+            validation_split=0.0,
+            validation_data=None,
+            shuffle=True,
+            class_weight=None,
+            sample_weight=None,
+            initial_epoch=0,
+            steps_per_epoch=None,
+            validation_steps=None,
+            validation_batch_size=None,
+            validation_freq=1,
+            max_queue_size=10,
+            workers=parameters.get('WORKERS', 1),
+            use_multiprocessing=False
+        )
     return model
