@@ -1,4 +1,4 @@
-<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="561px" height="421px" viewBox="-0.5 -0.5 561 421" content="&lt;mxfile&gt;&lt;diagram id=&quot;Ivl08PhDmwnxmZBjAvgi&quot; name=&quot;Page-1&quot;&gt;5ZdNj9sgEIZ/jaX2Uvkj9jrHxptte1ipaio1PbLxJEbFYGG8cfrrCwH8sSTtSrtyou4lYV4Yw8w8GOxFWdl+4qgq7lkOxAv9vPWiWy8Mk3kof5Vw0EKU+lrYcZxrKeiFFf4NRrTDGpxDPRooGCMCV2NxwyiFjRhpiHO2Hw/bMjKetUI7cITVBhFX/YFzUWg1jf1e/wx4V9iZA9/0lMgONkJdoJztB1K09KKMMyZ0q2wzICp3Ni/a7+5Mb7cwDlQ8xyE1yxAHGxvkMlRjUkbl36IQJZFWIJvQYrEetH/Ktv8hNtatKrBvjYM1qOCH9dAYeCmzdzta1m+LCckYYfy4sAiiTeorvRac/YJBz8Kfx8ceHYyK4Gw6jFSzhm/MKAOjQHwHZlTSlUIiDKwEuS45hANBAj+On44MTLtuXJ9v2TApP51+M/UjIo156HdohaeKdid/v0HFuDJLvYOelIqzhuaQm3TtCyxgVaFjWHu578aVMzMBF9D+PTtu3MZhZqA9jM19vwUCy3UxwD/xX56o+QScTsVb9EK4jOtXhqnoixOF4+p05bGP0HwbryeZ75bxrGJEDrULOGJ6f42YBsmEnNoT6k2/UGeXe6HOHDS/lOow716h/rulTM5H2cgKWFMQ76+N1zCdktfACf/t8RpfjtfYvQCgh4Ygfr2H/pR0hv/RsZ+4lN1MRFniULZEnKiptk2NGe1hS1CpEKIPddUFOsj+P3BDdaU/t7a4VYi+Bn/OveYEgOkJ/tJX4O/G3Z0cYSpDO3fXuUCC4ukSJM3+01RfHPvv+2j5Bw==&lt;/diagram&gt;&lt;/mxfile&gt;">
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="561px" height="421px" viewBox="-0.5 -0.5 561 421" content="&lt;mxfile&gt;&lt;diagram id=&quot;Ivl08PhDmwnxmZBjAvgi&quot; name=&quot;Page-1&quot;&gt;5Zffb5swEMf/GqTtpQIcKHlc0qTbQ6VpmbTs0QkXsGZsZExC9tfPxuZXSbtKS9NsewHf1z7w3X2MjYPmWXUvcJ4+8Bio47tx5aA7x/fDqa+uWjgaAUWuERJBYiN5nbAiP8GKzbCSxFAMBkrOqST5UNxyxmArBxoWgh+Gw3acDt+a4wRGwmqL6Vj9RmKZGjUK3E7/CCRJmzd7ru3JcDPYCkWKY37oSWjhoLngXJpWVs2B6tw1eTF+yyd624kJYPIlDpGdhjw2sUGsQrUm40zdZqnMqLI81YSKyHWv/V213ZvAWne6wG5jHBuDSXFc942elzY7t9pq/HaE0jmnXNQTQ4C2kav1Qgr+A3o9M3ca1D3j6G1CCl6KrQ3QsiexSMCOCo2kQ++52YzdA89AzUsNEECxJPshBdjClLTjunyrhk356fTbuewxLe1Dv0IlHV20pbp+gZwLbWZmBT0qleAliyG26TqkRMIqx3WcB7XuhpV7Mjd7EBKqZ+O2vRML7XFoHrol4DVcpz38Q/fPEzW9AKevxBs6N1zW9TMnTHbFQf6wOm15mkcY4K3Xo8y303hRMdCI2hnUmD5cI6ZeeEFOmx3qf/qgTq7ogzoZofkp05t5+wl13y1Ucj6oxjyFNQP5/tp49aNL8uqNwv/neQ2uiNdgfADAm5Jicb2b/iXp9P/ebT8cU3b7VpSFI8qWZUE4qw+aIVXTm20UcWGiWxa7EGcaJrYp8jbkXh1+Ax4ucvPjtSOVhvUcJI5OOCdQjE6QGJ2BxNvxOhWYMBXaqRSePge9QcqCy6VMmd1vqzlUdv/+aPEL&lt;/diagram&gt;&lt;/mxfile&gt;">
     <defs/>
     <g>
         <path d="M 120 30 L 275.64 195.36" fill="none" stroke="#b09500" stroke-miterlimit="10" pointer-events="stroke"/>
@@ -86,13 +86,15 @@
                     <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 200px; margin-left: 281px;">
                         <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;">
                             <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                Early fusion model
+                                Fusion
+                                <br/>
+                                model
                             </div>
                         </div>
                     </div>
                 </foreignObject>
                 <text x="320" y="204" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">
-                    Early fusion...
+                    Fusion...
                 </text>
             </switch>
         </g>
@@ -103,13 +105,15 @@
                     <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 200px; margin-left: 481px;">
                         <div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;">
                             <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                Trained Model
+                                Trained
+                                <br/>
+                                Model
                             </div>
                         </div>
                     </div>
                 </foreignObject>
                 <text x="520" y="204" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">
-                    Trained Model
+                    Trained...
                 </text>
             </switch>
         </g>
