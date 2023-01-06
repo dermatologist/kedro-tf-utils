@@ -15,7 +15,7 @@ fusion:
   EARLY_FUSION: True
   train_embedding: True  # Keep it same as EARLY_FUSION
   DENSE_LAYER: 128
-  EPOCHS: 10
+  EPOCHS: 3
   NCLASSES: 1
 bert_model:
   MAX_LENGTH: 40

@@ -135,15 +135,44 @@ def train_multimodal(**kwargs):
         )
         b64 = parameters.get('BASE64', True)
         if b64:
-            model = insert_layer_nonseq(model, '.*input_1.*', dropout_layer_factory, 'b64_input_bytes', position='after')
-    print(model.summary())
-    print(model.inputs)
+            model = insert_first_layer(model, 'input_1', dropout_layer_factory, 'b64_input_bytes', position='after')
+    # print(model.summary())
+    # print(model.inputs)
     return model
 
 
 def dropout_layer_factory():
     inputs = tf.keras.layers.Input(shape=(), dtype=tf.string, name='b64_input_bytes')
     return tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
+
+
+def insert_first_layer(model, layer_name, insert_layer_factory,
+                        insert_layer_name=None, position='after'):
+
+
+    to_modify = None
+    for layer in model.layers:
+        if layer.name == layer_name:
+            to_modify = layer
+            for node in layer._outbound_nodes:
+                layer_name = node.outbound_layer.name
+                print("Outbound layer name: {}".format(layer_name))
+            break
+    else:
+        raise ValueError('Layer not found')
+
+
+
+    # Create the new layer
+    new_layer = insert_layer_factory()
+    # new_layer = to_modify(new_layer)
+    print("New layer: {}".format(new_layer))
+
+    for input in model.inputs:
+        print("Input: {}".format(input.name))
+
+
+    return model
 
 # https://stackoverflow.com/questions/49492255/how-to-replace-or-insert-intermediate-layer-in-keras-model
 def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
@@ -154,6 +183,7 @@ def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
 
     # Set the input layers of each layer
     for layer in model.layers:
+        # print(layer.name)
         for node in layer._outbound_nodes:
             layer_name = node.outbound_layer.name
             if layer_name not in network_dict['input_layers_of']:
@@ -162,15 +192,16 @@ def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
             else:
                 network_dict['input_layers_of'][layer_name].append(layer.name)
 
-    print(network_dict['input_layers_of'])
     # Set the output tensor of the input layer
     network_dict['new_output_tensor_of'].update(
-        {model.layers[0].name: model.input})
+        {model.layers[0].name: model.inputs[0].name})
+
+
 
     # Iterate over all layers after the input
     model_outputs = []
-    for layer in model.layers[0:]:
-        print(layer.name)
+    for layer in model.layers[1:]:
+
         # Determine input tensors
         layer_input = [network_dict['new_output_tensor_of'][layer_aux]
                        for layer_aux in network_dict['input_layers_of'][layer.name]]
@@ -179,8 +210,6 @@ def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
 
         # Insert layer if name matches the regular expression
         if re.match(layer_regex, layer.name):
-            print('Inserting layer {} before layer {}.'.format(
-                insert_layer_name, layer.name))
             if position == 'replace':
                 x = layer_input
             elif position == 'after':
@@ -215,15 +244,15 @@ def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
     return Model(inputs=model.inputs, outputs=model_outputs)
 
  # https://github.com/tensorflow/serving/issues/1869?utm_source=pocket_saves
-def preprocess_input(base64_input_bytes, parameters):
+def preprocess_input(base64_input_bytes, parameters={}):
     def decode_bytes(img_bytes):
         img = tf.image.decode_jpeg(img_bytes, channels=3)
-        img = tf.image.resize(img, parameters.get('MODEL_INPUT_SHAPE', (224, 224, 3)))
-        img = tf.image.convert_image_dtype(img, parameters.get('MODEL_INPUT_DTYPE', tf.float32))
+        img = tf.image.resize(img, parameters.get('MODEL_INPUT_SHAPE', (224, 224)))
+        img = tf.image.convert_image_dtype(img, parameters.get('MODEL_INPUT_DTYPE', tf.string))
         return img
 
     base64_input_bytes = tf.reshape(base64_input_bytes, (-1,))
     return tf.map_fn(lambda img_bytes:
                      decode_bytes(img_bytes),
                      elems=base64_input_bytes,
-                     fn_output_signature=parameters.get('MODEL_INPUT_DTYPE', tf.float32))
+                     fn_output_signature=parameters.get('MODEL_INPUT_DTYPE', tf.string))
