@@ -73,5 +73,10 @@ def fusion(**kwargs) -> Model:
 
     multi_model = Model(input_shapes, out, name="fusion_model")
     logging.info("Multi model summary: input_shapes: {}, out: {}".format(input_shapes, out))
+    visualize = parameters.get("VISUALIZE", False)
+    if visualize:
+        logging.info("Visualizing model")
+        from keras.utils import plot_model
+        plot_model(multi_model, to_file=parameters["VISUALIZE"], show_shapes=True, show_layer_names=True)
     return multi_model
 
