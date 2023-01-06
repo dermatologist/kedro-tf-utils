@@ -2,12 +2,16 @@
 This is a boilerplate pipeline 'train'
 generated using Kedro 0.18.4
 """
+import re
 import numpy as np
 from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 import tensorflow as tf
+from keras import Model
+
 import logging
 logger = logging.getLogger(__name__)
+
 
 def train_multimodal(**kwargs):
     """
@@ -112,12 +116,12 @@ def train_multimodal(**kwargs):
             x=x,
             y=y,
             batch_size=parameters.get('BATCH_SIZE', 32),
-            epochs=parameters.get('EPOCHS', 10),
+            epochs=parameters.get('EPOCHS', 3),
             verbose='auto',
             callbacks=None,
             validation_split=0.0,
             validation_data=None,
-            shuffle=True,
+            shuffle=False,
             class_weight=None,
             sample_weight=None,
             initial_epoch=0,
@@ -129,4 +133,97 @@ def train_multimodal(**kwargs):
             workers=parameters.get('WORKERS', 1),
             use_multiprocessing=False
         )
+        b64 = parameters.get('BASE64', True)
+        if b64:
+            model = insert_layer_nonseq(model, '.*input_1.*', dropout_layer_factory, 'b64_input_bytes', position='after')
+    print(model.summary())
+    print(model.inputs)
     return model
+
+
+def dropout_layer_factory():
+    inputs = tf.keras.layers.Input(shape=(), dtype=tf.string, name='b64_input_bytes')
+    return tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
+
+# https://stackoverflow.com/questions/49492255/how-to-replace-or-insert-intermediate-layer-in-keras-model
+def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
+                        insert_layer_name=None, position='after'):
+
+    # Auxiliary dictionary to describe the network graph
+    network_dict = {'input_layers_of': {}, 'new_output_tensor_of': {}}
+
+    # Set the input layers of each layer
+    for layer in model.layers:
+        for node in layer._outbound_nodes:
+            layer_name = node.outbound_layer.name
+            if layer_name not in network_dict['input_layers_of']:
+                network_dict['input_layers_of'].update(
+                    {layer_name: [layer.name]})
+            else:
+                network_dict['input_layers_of'][layer_name].append(layer.name)
+
+    print(network_dict['input_layers_of'])
+    # Set the output tensor of the input layer
+    network_dict['new_output_tensor_of'].update(
+        {model.layers[0].name: model.input})
+
+    # Iterate over all layers after the input
+    model_outputs = []
+    for layer in model.layers[0:]:
+        print(layer.name)
+        # Determine input tensors
+        layer_input = [network_dict['new_output_tensor_of'][layer_aux]
+                       for layer_aux in network_dict['input_layers_of'][layer.name]]
+        if len(layer_input) == 1:
+            layer_input = layer_input[0]
+
+        # Insert layer if name matches the regular expression
+        if re.match(layer_regex, layer.name):
+            print('Inserting layer {} before layer {}.'.format(
+                insert_layer_name, layer.name))
+            if position == 'replace':
+                x = layer_input
+            elif position == 'after':
+                x = layer(layer_input)
+            elif position == 'before':
+                pass
+            else:
+                raise ValueError('position must be: before, after or replace')
+
+            new_layer = insert_layer_factory()
+            if insert_layer_name:
+                new_layer.name = insert_layer_name
+            else:
+                new_layer.name = '{}_{}'.format(layer.name,
+                                                new_layer.name)
+            x = new_layer(x)
+            print('New layer: {} Old layer: {} Type: {}'.format(new_layer.name,
+                                                                layer.name, position))
+            if position == 'before':
+                x = layer(x)
+        else:
+            x = layer(layer_input)
+
+        # Set new output tensor (the original one, or the one of the inserted
+        # layer)
+        network_dict['new_output_tensor_of'].update({layer.name: x})
+
+        # Save tensor in output list if it is output in initial model
+        if layer_name in model.output_names:
+            model_outputs.append(x)
+
+    return Model(inputs=model.inputs, outputs=model_outputs)
+
+ # https://github.com/tensorflow/serving/issues/1869?utm_source=pocket_saves
+def preprocess_input(base64_input_bytes, parameters):
+    def decode_bytes(img_bytes):
+        img = tf.image.decode_jpeg(img_bytes, channels=3)
+        img = tf.image.resize(img, parameters.get('MODEL_INPUT_SHAPE', (224, 224, 3)))
+        img = tf.image.convert_image_dtype(img, parameters.get('MODEL_INPUT_DTYPE', tf.float32))
+        return img
+
+    base64_input_bytes = tf.reshape(base64_input_bytes, (-1,))
+    return tf.map_fn(lambda img_bytes:
+                     decode_bytes(img_bytes),
+                     elems=base64_input_bytes,
+                     fn_output_signature=parameters.get('MODEL_INPUT_DTYPE', tf.float32))
