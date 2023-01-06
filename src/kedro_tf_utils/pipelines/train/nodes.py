@@ -135,124 +135,66 @@ def train_multimodal(**kwargs):
         )
         b64 = parameters.get('BASE64', True)
         if b64:
-            model = insert_first_layer(model, 'input_1', dropout_layer_factory, 'b64_input_bytes', position='after')
+            model = insert_first_layer(model, 'input_1', None, 'b64_input_bytes', position='after')
     # print(model.summary())
     # print(model.inputs)
     return model
 
 
-def dropout_layer_factory():
-    inputs = tf.keras.layers.Input(shape=(), dtype=tf.string, name='b64_input_bytes')
-    return tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
+
 
 
 def insert_first_layer(model, layer_name, insert_layer_factory,
                         insert_layer_name=None, position='after'):
 
+    # tf.compat.v1.disable_eager_execution()
+    # input_bytes = tf.compat.v1.placeholder(tf.string, shape=[], name="input_bytes")
+    # input_tensor = png_to_input_tensor(input_bytes)
 
-    to_modify = None
-    for layer in model.layers:
-        if layer.name == layer_name:
-            to_modify = layer
-            for node in layer._outbound_nodes:
-                layer_name = node.outbound_layer.name
-                print("Outbound layer name: {}".format(layer_name))
-            break
-    else:
-        raise ValueError('Layer not found')
+    inputs = tf.keras.layers.Input(shape=(), dtype=tf.string, name='b64_input_bytes')
 
 
+    # x = tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
 
-    # Create the new layer
-    new_layer = insert_layer_factory()
-    # new_layer = to_modify(new_layer)
-    print("New layer: {}".format(new_layer))
 
+    idx =0
     for input in model.inputs:
-        print("Input: {}".format(input.name))
-
-
+        print("Input:{} {}".format(idx, input.name))
+        if input.name == layer_name:
+            print("Found input")
+            model.inputs[idx] = tf.keras.layers.Lambda(
+                preprocess_input, name='decode_image_bytes')(inputs)
+        idx += 1
+    print(model.inputs)
+    # model = tf.keras.Model(inputs=model.inputs, outputs=model.outputs)
     return model
 
-# https://stackoverflow.com/questions/49492255/how-to-replace-or-insert-intermediate-layer-in-keras-model
-def insert_layer_nonseq(model, layer_regex, insert_layer_factory,
-                        insert_layer_name=None, position='after'):
 
-    # Auxiliary dictionary to describe the network graph
-    network_dict = {'input_layers_of': {}, 'new_output_tensor_of': {}}
-
-    # Set the input layers of each layer
-    for layer in model.layers:
-        # print(layer.name)
-        for node in layer._outbound_nodes:
-            layer_name = node.outbound_layer.name
-            if layer_name not in network_dict['input_layers_of']:
-                network_dict['input_layers_of'].update(
-                    {layer_name: [layer.name]})
-            else:
-                network_dict['input_layers_of'][layer_name].append(layer.name)
-
-    # Set the output tensor of the input layer
-    network_dict['new_output_tensor_of'].update(
-        {model.layers[0].name: model.inputs[0].name})
-
-
-
-    # Iterate over all layers after the input
-    model_outputs = []
-    for layer in model.layers[1:]:
-
-        # Determine input tensors
-        layer_input = [network_dict['new_output_tensor_of'][layer_aux]
-                       for layer_aux in network_dict['input_layers_of'][layer.name]]
-        if len(layer_input) == 1:
-            layer_input = layer_input[0]
-
-        # Insert layer if name matches the regular expression
-        if re.match(layer_regex, layer.name):
-            if position == 'replace':
-                x = layer_input
-            elif position == 'after':
-                x = layer(layer_input)
-            elif position == 'before':
-                pass
-            else:
-                raise ValueError('position must be: before, after or replace')
-
-            new_layer = insert_layer_factory()
-            if insert_layer_name:
-                new_layer.name = insert_layer_name
-            else:
-                new_layer.name = '{}_{}'.format(layer.name,
-                                                new_layer.name)
-            x = new_layer(x)
-            print('New layer: {} Old layer: {} Type: {}'.format(new_layer.name,
-                                                                layer.name, position))
-            if position == 'before':
-                x = layer(x)
-        else:
-            x = layer(layer_input)
-
-        # Set new output tensor (the original one, or the one of the inserted
-        # layer)
-        network_dict['new_output_tensor_of'].update({layer.name: x})
-
-        # Save tensor in output list if it is output in initial model
-        if layer_name in model.output_names:
-            model_outputs.append(x)
-
-    return Model(inputs=model.inputs, outputs=model_outputs)
-
- # https://github.com/tensorflow/serving/issues/1869?utm_source=pocket_saves
-def preprocess_input(base64_input_bytes, parameters={}):
+def preprocess_input(base64_input_bytes):
     def decode_bytes(img_bytes):
         img = tf.image.decode_jpeg(img_bytes, channels=3)
-        img = tf.image.resize(img, parameters.get('MODEL_INPUT_SHAPE', (224, 224)))
-        img = tf.image.convert_image_dtype(img, parameters.get('MODEL_INPUT_DTYPE', tf.string))
+        img = tf.image.resize(img, (224, 224))
+        img = tf.image.convert_image_dtype(img, tf.float32)
         return img
 
     base64_input_bytes = tf.reshape(base64_input_bytes, (-1,))
     return tf.map_fn(lambda img_bytes:
                      decode_bytes(img_bytes),
                      elems=base64_input_bytes,
-                     fn_output_signature=parameters.get('MODEL_INPUT_DTYPE', tf.string))
+                     fn_output_signature=tf.float32)
+
+
+# Load png encoded image from string placeholder
+def png_to_input_tensor(png_placeholder, width=224, height=224, color_channels=3):
+
+	input_tensor = tf.reshape(png_placeholder, [])
+	input_tensor = tf.image.decode_png(input_tensor, channels=color_channels)
+
+	# Convert image to float and bring values in the range of 0-1
+	input_tensor = tf.image.convert_image_dtype(input_tensor, dtype=tf.float32)
+
+	# Reshape and add "batch" dimension (this expects a single image NOT in a list)
+	input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
+	# input_tensor = tf.expand_dims(input_tensor, 0)
+
+	return input_tensor
