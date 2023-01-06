@@ -147,26 +147,23 @@ def train_multimodal(**kwargs):
 def insert_first_layer(model, layer_name, insert_layer_factory,
                         insert_layer_name=None, position='after'):
 
-    # tf.compat.v1.disable_eager_execution()
-    # input_bytes = tf.compat.v1.placeholder(tf.string, shape=[], name="input_bytes")
-    # input_tensor = png_to_input_tensor(input_bytes)
-
     inputs = tf.keras.layers.Input(shape=(), dtype=tf.string, name='b64_input_bytes')
-
-
-    # x = tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
-
-
+    x = tf.keras.layers.Lambda(preprocess_input, name='decode_image_bytes')(inputs)
     idx =0
+    for l in model.layers:
+        if l.name == layer_name:
+           x = l(x)
+        model.layers[idx] = x
+        idx += 1
+    idx = 0
     for input in model.inputs:
         print("Input:{} {}".format(idx, input.name))
         if input.name == layer_name:
             print("Found input")
-            model.inputs[idx] = tf.keras.layers.Lambda(
-                preprocess_input, name='decode_image_bytes')(inputs)
+            model.inputs[idx] = x
         idx += 1
     print(model.inputs)
-    # model = tf.keras.Model(inputs=model.inputs, outputs=model.outputs)
+    model = tf.keras.Model(inputs=model.inputs, outputs=model.outputs)
     return model
 
 
