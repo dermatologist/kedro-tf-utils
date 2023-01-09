@@ -41,22 +41,20 @@ train_pipeline = create_train_pipeline(**args)
 ```
 
 ## [Catalogue](conf/base/catalog.yml)
-## [params:fusion](conf/base/parameters/fusion.yml) | [params:train](conf/base/parameters/train.yml)
+## [params:fusion](conf/base/parameters/fusion.yml)
+* VISUALIZE: /path/to/save/model/structure.png
+## [params:train](conf/base/parameters/train.yml)
+* CALLBACKS: /path/to/save/checkpoints
+* SERVING: /path/to/save/new/model/with/tf/serving/b64/image/layer
+## TODO
+* Checkpoints and model wrapped for TF serving b64 image string support only supports local folders currently.
 
 ## Troubleshoot
 
+### BERT model has some issues related to tensorflow_text
 * Downloaded BERT models will not copy vocab.txt in assets folder to the newly created fusion model. This has to be manually copied.
 * The class_num in TfModelWeights must be equal to to NCLASSES during training. Otherwise it throws an error:  Tensorflow estimator ValueError: logits and labels must have the same shape ((?, 1) vs (?,))
-* **The number of prediction classes should be equal for all models**. Otherwise leads to the above error
-```
-fusion_model:
-  type: tensorflow.TensorFlowModelDataset
-  filepath: data/07_model_output/fusion
-
-trained_model:
-  type: tensorflow.TensorFlowModelDataset
-  filepath: data/07_model_output/trained-model
-```
+* Saving models with support for b64 string input for TF serving may not work for BERT models yet.
 
 ## Contributors
 
