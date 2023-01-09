@@ -15,7 +15,6 @@ from keras.layers import (
     Flatten,
 )
 from keras.models import Model
-from kedro_tf_image.extras.classes.tf_image_classifier_model import ImageClassifierModel
 
 
 # https://github.com/keras-team/keras/issues/7403
