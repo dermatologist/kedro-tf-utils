@@ -7,6 +7,8 @@ from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 import tensorflow as tf
 import logging
+
+from kedro_tf_utils.extras.classes.fusion_model import ServingWrapperModel
 logger = logging.getLogger(__name__)
 
 def train_multimodal(**kwargs):
@@ -95,6 +97,14 @@ def train_multimodal(**kwargs):
 
     logger.info("Final intersection of IDs: {}".format(len(intersection_ids)))
 
+    callbacks_path = parameters.get('CALLBACKS', False)
+    callbacks = None
+    if callbacks_path:
+        logger.info("Saving model for serving")
+        callbacks = [tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=5, restore_best_weights=True),
+                     tf.keras.callbacks.ModelCheckpoint(callbacks_path, 'accuracy', save_best_only=False)]
+
+
     ## https: // stackoverflow.com/questions/49079115/valueerror-negative-dimension-size-caused-by-subtracting-2-from-1-for-max-pool
     model.compile(loss='binary_crossentropy',
                             optimizer=Adam(), metrics=['accuracy'])
@@ -111,10 +121,10 @@ def train_multimodal(**kwargs):
         hist = model.fit(
             x=x,
             y=y,
-            batch_size=parameters.get('BATCH_SIZE', 32),
+            batch_size=parameters.get('BATCH_SIZE', 4),
             epochs=parameters.get('EPOCHS', 10),
             verbose='auto',
-            callbacks=None,
+            callbacks=callbacks,
             validation_split=0.0,
             validation_data=None,
             shuffle=True,
@@ -129,4 +139,9 @@ def train_multimodal(**kwargs):
             workers=parameters.get('WORKERS', 1),
             use_multiprocessing=False
         )
+    serving = parameters.get('SERVING', False)
+    if serving:
+        logger.info("Adding serving wrapper")
+        _model = ServingWrapperModel(model)
+        tf.saved_model.save(_model, serving, signatures=_model.get_signatures())
     return model

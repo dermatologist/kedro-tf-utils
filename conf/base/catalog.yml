@@ -12,12 +12,6 @@ tabular_model:
   type: tensorflow.TensorFlowModelDataset
   filepath: data/06_models/tabular-model
 
-# image_data:
-#   type: PartitionedDataSet
-#   dataset: pillow.ImageDataSet
-#   path: data/01_raw/imageset
-#   filename_suffix: ".jpg"
-
 image_data:
   type: PartitionedDataSet
   dataset: {
@@ -53,14 +47,6 @@ processed_text:
 bert_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test_report.csv
-
-# pretrained_embedding:
-#   type: text.TextDataSet
-#   filepath: data/04_feature/new_data_embed300.txt
-
-# vocab_json:
-#   type: json.JSONDataSet
-#   filepath: data/04_feature/vocab.json
 
 word2vec_embedding:
   type: pickle.PickleDataSet
