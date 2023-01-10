@@ -93,7 +93,7 @@ class ServingWrapperModel(tf.keras.Model):
                 logger.info(f"Tensor shape for image: {tensor.shape}")
                 [height, width, color_channels] = self.image_input_shape[1:]
                 input_tensor = tf.reshape(tensor, [])
-                input_tensor = tf.image.decode_png(input_tensor, channels=color_channels)
+                input_tensor = tf.image.decode_image(input_tensor, channels=color_channels)
 
                 # Convert image to float and bring values in the range of 0-1
                 input_tensor = tf.image.convert_image_dtype(input_tensor, dtype=tf.float32)
