@@ -102,7 +102,6 @@ class ServingWrapperModel(tf.keras.Model):
                 input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
                 input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
                 logger.info(f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
-                _args[idx] = input_tensor
             else:
                 # ! Batch size should be 1 for all inputs for prediction
                 # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
@@ -127,11 +126,10 @@ class ServingWrapperModel(tf.keras.Model):
                 logger.info(f"Tensor shape for image: {tensor.shape}")
                 [height, width, color_channels] = self.image_input_shape[1:]
                 # Reshape and add "batch" dimension (this expects a single image NOT in a list)
-                input_tensor = tf.reshape(input_tensor, [1, height, width, color_channels])
+                input_tensor = tf.reshape(tensor, [1, height, width, color_channels])
                 # input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
                 logger.info(
                     f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
-                _args[idx] = input_tensor
             else:
                 # ! Batch size should be 1 for all inputs for prediction
                 # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
