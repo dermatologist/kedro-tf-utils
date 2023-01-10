@@ -26,7 +26,7 @@ class ServingWrapperModel(tf.keras.Model):
         self.out = out
         self.input_signature_bytes = input_signature_bytes
         self.input_signature_array = input_signature_array
-
+        self.image_input_shape = (224,224)
         self.predict_bytes_image = tf.function(input_signature=input_signature_bytes)(self._predict_bytes_image)
         self.predict_numpy_image = tf.function(input_signature=input_signature_array)(self._predict_numpy_image)
 
@@ -37,6 +37,7 @@ class ServingWrapperModel(tf.keras.Model):
         input_signature_array = []
         for input in base_model.inputs:
             if input.name == "input_1":
+                self.image_input_shape = input.shape[1:3]
                 input_signature_bytes.append(tf.TensorSpec(
                     name="input_bytes", shape=(None,), dtype=tf.string))
             else:
@@ -91,10 +92,11 @@ class ServingWrapperModel(tf.keras.Model):
             if "_bytes" in tensor.name:
                 logger.info(f"Tensor shape for image: {tensor.shape}")
                 image = tensor
-                # image = tf.io.decode_base64(image) # ? This will be done by TF serving
                 image = tf.reshape(image, [])
-                image = tf.io.decode_image(
+                image = tf.image.decode_image(
                     image, channels=3, dtype=tf.float32, expand_animations=False)
+                # Reshape and add "batch" dimension (this expects a single image NOT in a list)
+                image = tf.image.resize(image, self.image_input_shape)
                 image = tf.expand_dims(image, 0)
                 _args[idx] = image
         return self.call(_args)
