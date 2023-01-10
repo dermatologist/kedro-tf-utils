@@ -26,7 +26,7 @@ class ServingWrapperModel(tf.keras.Model):
         self.out = out
         self.input_signature_bytes = input_signature_bytes
         self.input_signature_array = input_signature_array
-
+        self.image_input_shape = [None, 224, 224, 3]
         self.predict_bytes_image = tf.function(input_signature=input_signature_bytes)(self._predict_bytes_image)
         self.predict_numpy_image = tf.function(input_signature=input_signature_array)(self._predict_numpy_image)
 
@@ -37,6 +37,7 @@ class ServingWrapperModel(tf.keras.Model):
         input_signature_array = []
         for input in base_model.inputs:
             if input.name == "input_1":
+                self.image_input_shape = input.shape
                 input_signature_bytes.append(tf.TensorSpec(
                     name="input_bytes", shape=(None,), dtype=tf.string))
             else:
@@ -90,14 +91,26 @@ class ServingWrapperModel(tf.keras.Model):
             logger.info(f"Tensor name: {tensor.name}")
             if "_bytes" in tensor.name:
                 logger.info(f"Tensor shape for image: {tensor.shape}")
-                image = tensor
-                # image = tf.io.decode_base64(image) # ? This will be done by TF serving
-                image = tf.reshape(image, [])
-                image = tf.io.decode_image(
-                    image, channels=3, dtype=tf.float32, expand_animations=False)
-                image = tf.expand_dims(image, 0)
-                _args[idx] = image
-        return self.call(_args)
+                [height, width, color_channels] = self.image_input_shape[1:]
+                input_tensor = tf.reshape(tensor, [])
+                input_tensor = tf.image.decode_image(input_tensor, channels=color_channels)
+
+                # Convert image to float and bring values in the range of 0-1
+                input_tensor = tf.image.convert_image_dtype(input_tensor, dtype=tf.float32)
+
+                # Reshape and add "batch" dimension (this expects a single image NOT in a list)
+                input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
+                input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
+                logger.info(f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
+            else:
+                # ! Batch size should be 1 for all inputs for prediction
+                # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
+                input_tensor = tf.reshape(tensor, [])
+                name = tensor.name.split(":")[0]
+                input_tensor = tf.expand_dims(input_tensor, 0, name=name)
+            _args[idx] = input_tensor
+        logger.info(f"Args  : {_args}")
+        return self.call(tuple(_args))
 
     def _predict_numpy_image(self, *args):
         """
@@ -106,4 +119,23 @@ class ServingWrapperModel(tf.keras.Model):
         :param inputs: 4d array image (batch, height, width, channel).
         :return: prediction result.
         """
-        return self.call(args)
+        _args = list(args)
+        for idx, tensor in enumerate(args):
+            logger.info(f"Tensor name: {tensor.name}")
+            if "input_1" in tensor.name:
+                logger.info(f"Tensor shape for image: {tensor.shape}")
+                [height, width, color_channels] = self.image_input_shape[1:]
+                # Reshape and add "batch" dimension (this expects a single image NOT in a list)
+                input_tensor = tf.reshape(tensor, [1, height, width, color_channels])
+                # input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
+                logger.info(
+                    f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
+            else:
+                # ! Batch size should be 1 for all inputs for prediction
+                # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
+                input_tensor = tf.reshape(tensor, [])
+                name = tensor.name.split(":")[0]
+                input_tensor = tf.expand_dims(input_tensor, 0, name=name)
+            _args[idx] = input_tensor
+        logger.info(f"Args  : {_args}")
+        return self.call(tuple(_args))
