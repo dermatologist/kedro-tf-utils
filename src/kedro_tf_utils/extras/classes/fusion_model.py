@@ -103,6 +103,10 @@ class ServingWrapperModel(tf.keras.Model):
                 input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
                 logger.info(f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
                 _args[idx] = input_tensor
+            else:
+                input_tensor = tf.reshape(tensor, [])
+                input_tensor = tf.expand_dims(input_tensor, 0)
+            _args[idx] = input_tensor
         logger.info(f"Args  : {_args}")
         return self.call(tuple(_args))
 
