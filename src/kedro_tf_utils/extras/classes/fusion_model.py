@@ -123,7 +123,7 @@ class ServingWrapperModel(tf.keras.Model):
         _args = list(args)
         for idx, tensor in enumerate(args):
             logger.info(f"Tensor name: {tensor.name}")
-            if "input_" in tensor.name:
+            if "input_1" in tensor.name:
                 logger.info(f"Tensor shape for image: {tensor.shape}")
                 [height, width, color_channels] = self.image_input_shape[1:]
                 input_tensor = tf.reshape(tensor, [])
