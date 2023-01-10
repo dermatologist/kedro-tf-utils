@@ -7,6 +7,8 @@ from keras.optimizers import Adam
 from keras.layers import MaxPooling2D
 import tensorflow as tf
 import logging
+import click
+import sys
 
 from kedro_tf_utils.extras.classes.fusion_model import ServingWrapperModel
 logger = logging.getLogger(__name__)
@@ -114,8 +116,8 @@ def train_multimodal(**kwargs):
     if evaluate:
         logger.info("Evaluating model")
         score = model.evaluate(x, y, batch_size=parameters.get('BATCH_SIZE', 32), verbose=1)
-        logger.info("Score: {}".format(score))
-        return score
+        click.secho("Score: {}".format(score), fg='green')
+        sys.exit(0)
     else:
         logger.info("Training model")
         hist = model.fit(

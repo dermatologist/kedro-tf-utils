@@ -1,6 +1,6 @@
 [project]
 name = "kedro_tf_utils"
-version = "2.0.6"
+version = "2.1.0"
 
 [tool.kedro]
 package_name = "kedro_tf_utils"

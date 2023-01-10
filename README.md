@@ -54,7 +54,6 @@ train_pipeline = create_train_pipeline(**args)
 ### BERT model has some issues related to tensorflow_text
 * Downloaded BERT models will not copy vocab.txt in assets folder to the newly created fusion model. This has to be manually copied.
 * The class_num in TfModelWeights must be equal to to NCLASSES during training. Otherwise it throws an error:  Tensorflow estimator ValueError: logits and labels must have the same shape ((?, 1) vs (?,))
-* Saving models with support for b64 string input for TF serving may not work for BERT models yet.
 
 ## Contributors
 
