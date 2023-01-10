@@ -126,7 +126,6 @@ class ServingWrapperModel(tf.keras.Model):
             if "input_1" in tensor.name:
                 logger.info(f"Tensor shape for image: {tensor.shape}")
                 [height, width, color_channels] = self.image_input_shape[1:]
-                input_tensor = tf.reshape(tensor, [])
                 # Reshape and add "batch" dimension (this expects a single image NOT in a list)
                 input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
                 input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
