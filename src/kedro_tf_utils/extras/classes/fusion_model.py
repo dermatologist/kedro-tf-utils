@@ -26,7 +26,7 @@ class ServingWrapperModel(tf.keras.Model):
         self.out = out
         self.input_signature_bytes = input_signature_bytes
         self.input_signature_array = input_signature_array
-        self.image_input_shape = (224,224)
+        self.image_input_shape = [None, 224, 224, 3]
         self.predict_bytes_image = tf.function(input_signature=input_signature_bytes)(self._predict_bytes_image)
         self.predict_numpy_image = tf.function(input_signature=input_signature_array)(self._predict_numpy_image)
 
@@ -37,7 +37,7 @@ class ServingWrapperModel(tf.keras.Model):
         input_signature_array = []
         for input in base_model.inputs:
             if input.name == "input_1":
-                self.image_input_shape = input.shape[1:3]
+                self.image_input_shape = input.shape
                 input_signature_bytes.append(tf.TensorSpec(
                     name="input_bytes", shape=(None,), dtype=tf.string))
             else:
@@ -91,14 +91,17 @@ class ServingWrapperModel(tf.keras.Model):
             logger.info(f"Tensor name: {tensor.name}")
             if "_bytes" in tensor.name:
                 logger.info(f"Tensor shape for image: {tensor.shape}")
-                image = tensor
-                image = tf.reshape(image, [])
-                image = tf.image.decode_image(
-                    image, channels=3, dtype=tf.float32, expand_animations=False)
+                [height, width, color_channels] = self.image_input_shape[1:]
+                input_tensor = tf.reshape(tensor, [])
+                input_tensor = tf.image.decode_png(input_tensor, channels=color_channels)
+
+                # Convert image to float and bring values in the range of 0-1
+                input_tensor = tf.image.convert_image_dtype(input_tensor, dtype=tf.float32)
+
                 # Reshape and add "batch" dimension (this expects a single image NOT in a list)
-                image = tf.image.resize(image, self.image_input_shape)
-                image = tf.expand_dims(image, 0)
-                _args[idx] = image
+                input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
+                input_tensor = tf.expand_dims(input_tensor, 0)
+                _args[idx] = input_tensor
         return self.call(_args)
 
     def _predict_numpy_image(self, *args):
