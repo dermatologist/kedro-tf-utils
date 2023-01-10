@@ -100,9 +100,11 @@ class ServingWrapperModel(tf.keras.Model):
 
                 # Reshape and add "batch" dimension (this expects a single image NOT in a list)
                 input_tensor = tf.reshape(input_tensor, [height, width, color_channels])
-                input_tensor = tf.expand_dims(input_tensor, 0)
+                input_tensor = tf.expand_dims(input_tensor, 0, name="input_1")
+                logger.info(f"Tensor shape for image after decoding is: {input_tensor.shape} and name is {input_tensor.name}")
                 _args[idx] = input_tensor
-        return self.call(_args)
+        logger.info(f"Args  : {_args}")
+        return self.call(tuple(_args))
 
     def _predict_numpy_image(self, *args):
         """
