@@ -105,8 +105,9 @@ class ServingWrapperModel(tf.keras.Model):
             else:
                 # ! Batch size should be 1 for all inputs for prediction
                 # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
-                input_tensor = tf.reshape(tensor, [])
+                input_tensor = tf.reshape(tensor, shape=[tf.shape(tensor)[1], ])
                 name = tensor.name.split(":")[0]
+                # * Adds BATCH_SIZE dim of 1 to the tensor, required for prediction
                 input_tensor = tf.expand_dims(input_tensor, 0, name=name)
             _args[idx] = input_tensor
         logger.info(f"Args  : {_args}")
@@ -133,8 +134,9 @@ class ServingWrapperModel(tf.keras.Model):
             else:
                 # ! Batch size should be 1 for all inputs for prediction
                 # * This sets batch size to 1 for all inputs, ie (None,1) -> (1,)
-                input_tensor = tf.reshape(tensor, [])
+                input_tensor = tf.reshape(tensor, shape=[tf.shape(tensor)[1], ])
                 name = tensor.name.split(":")[0]
+                # * Adds BATCH_SIZE dim of 1 to the tensor, required for prediction
                 input_tensor = tf.expand_dims(input_tensor, 0, name=name)
             _args[idx] = input_tensor
         logger.info(f"Args  : {_args}")

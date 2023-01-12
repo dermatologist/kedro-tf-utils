@@ -31,7 +31,8 @@ def train_multimodal(**kwargs):
             ids = _image_dataset.keys()
             members[name] = ids
         else:
-            members[name] = dataset[parameters['ID']].values
+            if type != "processed": # processed dataset is not a dataframe, so it doesn't have an ID column. ID will come from original csv dataset
+                members[name] = dataset[parameters['ID']].values
     intersection_ids = set.intersection(*map(set, members.values()))
     logger.info("Intersection of IDs before image loading: {}".format(len(intersection_ids)))
     ## Get intersection of all IDs #############################################
@@ -70,7 +71,10 @@ def train_multimodal(**kwargs):
             x.append(imgs)
         # Get data from processed dataset and Y from original csv dataset (below)
         elif type == "processed":
-            dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            #dataset = dataset[dataset[parameters['ID']].isin(intersection_ids)]
+            # res = dict((k, dataset[k]) for k in intersection_ids if k in dataset)
+            dataset = [dataset[k] for k in intersection_ids if k in dataset]
+            dataset = np.array(dataset)
             x.append(dataset)
             logger.info("Text Dataset shape: {}".format(dataset.shape))  # (4,140)
         elif type == "tabular":
