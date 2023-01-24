@@ -77,3 +77,7 @@ bert_model_saved:
 trained_model:
   type: tensorflow.TensorFlowModelDataset
   filepath: data/07_model_output/trained-model
+
+embedding:
+  type: pickle.PickleDataSet
+  filepath: data/04_feature/embedding.pkl

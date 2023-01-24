@@ -3,3 +3,10 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.4/kedro_project_setup/configuration.html#parameters
+embedding:
+  MAX_LENGTH: 40
+  NCLASSES: 3
+  REPORT_FIELD: report
+  ID: id
+  TARGET: dm
+  DROP: ["name", "id"]
