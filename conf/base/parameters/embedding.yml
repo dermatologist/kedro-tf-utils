@@ -10,3 +10,4 @@ embedding:
   ID: id
   TARGET: dm
   DROP: ["name", "id"]
+  EMBEDDING_DIM: 128

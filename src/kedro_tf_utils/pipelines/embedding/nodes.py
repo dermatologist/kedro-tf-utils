@@ -37,13 +37,20 @@ def create_embedding(**kwargs):
     Returns:
         _type_: _description_
     """
-    parameters = kwargs["parameters"]
-    model = kwargs["model"]
-    # Get intersection of all IDs
-    intersection_ids = get_intersection_ids(parameters, kwargs)
-    x, y = process_data(intersection_ids, parameters, kwargs)
-    model_headless = last_layer_normalized(model)
-    model_headless = Dense(parameters['EMBEDDING_DIM'], activation='relu', name='Dense_Embedding')(model_headless)
-    model_headless = Model(inputs=model_headless.input, outputs=model_headless.get_layer('Dense_Embedding').output)
+    _kwargs = kwargs.copy()
+    parameters = kwargs.pop("parameters")
+    model = kwargs.pop("model").load()
+
+    for name, dataset in kwargs.items():
+        type = name.split("_")[0]
+        if type == "image":
+            _image_dataset = dict(sorted(dataset.items()))
+            ids = _image_dataset.keys()
+        else:
+            ids = dataset[parameters['ID']].values
+    x, y = process_data(ids, _kwargs)
+    last_layer = last_layer_normalized(model)
+    last_layer = Dense(parameters['EMBEDDING_DIM'], activation='relu', name='Dense_Embedding')(last_layer)
+    model_headless = Model(inputs=model.input, outputs=last_layer)
     embedding = model_headless.predict(x)
     return embedding

@@ -17,13 +17,12 @@ def train_multimodal(**kwargs):
     """
     Train multimodal model
     """
+    ## Get intersection of all IDs #############################################
+    intersection_ids = get_intersection_ids(kwargs.copy())
+    x, y = process_data(intersection_ids, kwargs.copy())
+
     parameters = kwargs.pop("parameters")
     model = kwargs.pop("model")
-
-
-    ## Get intersection of all IDs #############################################
-    intersection_ids = get_intersection_ids(parameters, kwargs)
-    x, y = process_data(intersection_ids, parameters, kwargs)
 
     logger.info("Final intersection of IDs: {}".format(len(intersection_ids)))
 
@@ -77,9 +76,11 @@ def train_multimodal(**kwargs):
 
 
 
-def get_intersection_ids(parameters, kwargs):
+def get_intersection_ids(kwargs):
     ## Get intersection of all IDs #############################################
     members = {}
+    parameters = kwargs.pop("parameters")
+    model = kwargs.pop("model")
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
         if type == "image":
@@ -96,7 +97,9 @@ def get_intersection_ids(parameters, kwargs):
     return intersection_ids
 
 
-def process_data(intersection_ids, parameters, kwargs):
+def process_data(intersection_ids, kwargs):
+    parameters = kwargs.pop("parameters")
+    model = kwargs.pop("model")
     x = []
     y = None
     for name, dataset in kwargs.items():
