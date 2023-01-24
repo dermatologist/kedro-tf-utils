@@ -63,6 +63,4 @@ class TestEmbeddingPipeline:
             'tabular_data': tabular_data
         }
         data = create_embedding(**train_input)
-        print(data)
-        print(data.shape)
         assert data is not None
