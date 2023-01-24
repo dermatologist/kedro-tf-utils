@@ -39,7 +39,7 @@ def create_embedding(**kwargs):
     """
     _kwargs = kwargs.copy()
     parameters = kwargs.pop("parameters")
-    model = kwargs.pop("model").load()
+    model = kwargs.pop("model").load() # Load model from the kedro dataset
 
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
@@ -51,6 +51,14 @@ def create_embedding(**kwargs):
     x, y = process_data(ids, _kwargs)
     last_layer = last_layer_normalized(model)
     last_layer = Dense(parameters['EMBEDDING_DIM'], activation='relu', name='Dense_Embedding')(last_layer)
+    last_layer = BatchNormalization()(last_layer)
     model_headless = Model(inputs=model.input, outputs=last_layer)
     embedding = model_headless.predict(x)
-    return embedding
+    return {
+        "embedding": embedding,
+        "nodes": ids,
+        "y": y,
+        "name": name,
+        "type": type,
+        "parameters": parameters
+    }
