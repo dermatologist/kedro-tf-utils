@@ -2,7 +2,7 @@
 
 Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports. Use this [template](https://github.com/dermatologist/kedro-multimodal) to import these pipelines and perform multi-modal ML.
 
-[![kedro-tf-text](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)
+[![kedro-tf-utils](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)](https://github.com/dermatologist/kedro-tf-utils/blob/develop/notes/utils.drawio.svg)
 
 ## How to install
 
@@ -30,7 +30,7 @@ fusion_pipeline = create_fusion_pipeline(**fusion_inputs)
 ## How to build training pipeline
 
 ```
-from from kedro_tf_utils.pipelines.fusion.pipelines import create_train_pipeline
+from from kedro_tf_utils.pipelines.train.pipelines import create_train_pipeline
 
 # model and outputs are required
 args = {"parameters": "params:train", "model": "fusion_model",
@@ -38,6 +38,22 @@ args = {"parameters": "params:train", "model": "fusion_model",
 train_pipeline = create_train_pipeline(**args)
 # In pipeline_registry
 "__default__": train_pipeline
+```
+
+## How to build embedding pipeline
+(For use with [kedro-graph](https://github.com/dermatologist/kedro-graph))
+
+```
+from from kedro_tf_utils.pipelines.embedding.pipelines import create_embedding_pipeline
+
+# model and outputs are required
+# model and data should be of same type.
+# output is a PickleDataset
+args = {"parameters": "params:embedding", "model": "tabular_model",
+                  "tabular_data": "tabular_data", "outputs": "embeddings"}
+embedding_pipeline = create_embedding_pipeline(**args)
+# In pipeline_registry
+"__default__": create_embedding_pipeline
 ```
 
 ## [Catalogue](conf/base/catalog.yml)
