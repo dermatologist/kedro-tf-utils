@@ -10,7 +10,7 @@ tabular_data:
 
 tabular_model:
   type: tensorflow.TensorFlowModelDataset
-  filepath: data/06_models/tabular-model
+  filepath: data/06_models/tabular_model
 
 image_data:
   type: PartitionedDataSet

@@ -53,7 +53,7 @@ class TestEmbeddingPipeline:
         csvpath = "data/01_raw/test_dataset.csv"
         tabular_data = CSVDataSet(filepath=csvpath).load()
 
-        modelpath = 'data/06_models/tabular-model'
+        modelpath = 'data/06_models/tabular_model'
         tabular_model = TensorFlowModelDataset(filepath=modelpath)
 
         conf_params = project_context.config_loader.get('**/embedding.yml')
