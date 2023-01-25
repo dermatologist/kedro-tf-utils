@@ -39,7 +39,7 @@ def create_embedding(**kwargs):
     """
     _kwargs = kwargs.copy()
     parameters = kwargs.pop("parameters")
-    model = kwargs.pop("model").load() # Load model from the kedro dataset
+    model = kwargs.pop("model")
 
     for name, dataset in kwargs.items():
         type = name.split("_")[0]
