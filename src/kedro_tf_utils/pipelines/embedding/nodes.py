@@ -49,7 +49,10 @@ def create_embedding(**kwargs):
         else:
             ids = dataset[parameters['ID']].values
     x, y = process_data(ids, _kwargs)
-    last_layer = last_layer_normalized(model)
+    try:
+        last_layer = last_layer_normalized(model)
+    except: # Model is a feature_vector from TF Hub
+        last_layer = model
     last_layer = Dense(parameters['EMBEDDING_DIM'], activation='relu', name='Dense_Embedding')(last_layer)
     last_layer = BatchNormalization()(last_layer)
     model_headless = Model(inputs=model.input, outputs=last_layer)
