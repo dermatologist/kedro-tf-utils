@@ -45,7 +45,8 @@ def create_embedding(**kwargs):
         type = name.split("_")[0]
         if type == "image":
             _image_dataset = dict(sorted(dataset.items()))
-            ids = _image_dataset.keys()
+            # fix https://discuss.pytorch.org/t/dataloader-multiprocessing-error-cant-pickle-odict-keys-objects-when-num-workers-0/43951/4
+            ids = list(_image_dataset.keys())
         else:
             ids = dataset[parameters['ID']].values
     x, y = process_data(ids, _kwargs)
