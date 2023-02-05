@@ -1,4 +1,4 @@
-# Kedro Tf Utils:
+# Kedro Tf Utils :toolbox:
 
 Provides Kedro pipeline components for multi-modal fusion and training for [text](https://github.com/dermatologist/kedro-tf-text) and [image](https://github.com/dermatologist/kedro-tf-image) models for healthcare as in [X-rays](https://github.com/dermatologist/kedro-dicom) and radiology reports. Use this [template](https://github.com/dermatologist/kedro-multimodal) to import these pipelines and perform multi-modal ML.
 
